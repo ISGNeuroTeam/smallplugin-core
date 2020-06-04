@@ -1,0 +1,5 @@
+mlmodels {
+  fs = "file:/"
+  path = "///mnt/glfs/mlmodels/"
+}
+loglevel = "/opt/otp/Dispatcher/plugins/smallPlugin/loglevel.properties"
