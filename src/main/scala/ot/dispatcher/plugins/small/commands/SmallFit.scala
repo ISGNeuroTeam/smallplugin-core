@@ -2,7 +2,7 @@ package ot.dispatcher.plugins.small.commands
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.NumericType
-import ot.dispatcher.plugins.small.algos.fit.{Classification, Clustering, LinearRegression, RandomForest}
+import ot.dispatcher.plugins.small.algos.fit.{Classification, Clustering, GradientBoosting, LinearRegression, RandomForest}
 import ot.dispatcher.plugins.small.utils.SmallModelsUtils
 import ot.dispatcher.sdk.core.SimpleQuery
 import ot.dispatcher.sdk.core.extensions.StringExt._
@@ -38,6 +38,8 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
         Classification(featureCols, targetCol, _df, modelName, sq.searchId)
       case "random_forest" =>
         RandomForest(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
+      case "gradient_boosting" =>
+        GradientBoosting(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
       case x => sendError(s" Algorithm with name '$x'  is unsupported at this moment")
     }
 

@@ -12,7 +12,7 @@ class SmallFitGradientBoostingTest extends CommandTest {
 
 
   test("Test 0. Command: | fit random_forest") {
-    val query = SimpleQuery(""" random_forest class from a b c into rf_test""")
+    val query = SimpleQuery(""" gradient_boosting class from a b c into rf_test""")
     val command = new SmallFit(query, utils)
     val actual = execute(command)
     val expected =

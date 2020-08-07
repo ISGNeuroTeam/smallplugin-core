@@ -1,6 +1,7 @@
 package ot.dispatcher.plugins.small.algos.fit
 
 import org.apache.spark.ml.classification.RandomForestClassifier
+import org.apache.spark.ml.classification.GBTClassifier
 import org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorAssembler, VectorIndexer}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.sql.DataFrame
@@ -49,13 +50,13 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
     featureIndexer.transform(afdf).show()
 
     val predictionName = s"__${modelName}_prediction__"
-    val rf = new RandomForestClassifier()
+    val rf = new GBTClassifier()
       .setLabelCol(indexedLabel)
       .setFeaturesCol(indexedFeatures)
       .setPredictionCol(predictionName)
       .setRawPredictionCol("raw_prediction")
       .setProbabilityCol("probability_prediction")
-      .setNumTrees(num)
+      //.setNumTrees(num)
 
     val labelConverter = new IndexToString()
       .setInputCol(predictionName)
