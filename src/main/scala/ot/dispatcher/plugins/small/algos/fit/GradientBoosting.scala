@@ -1,6 +1,5 @@
 package ot.dispatcher.plugins.small.algos.fit
 
-import org.apache.spark.ml.classification.RandomForestClassifier
 import org.apache.spark.ml.classification.GBTClassifier
 import org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorAssembler, VectorIndexer}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
@@ -25,7 +24,7 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
         case Success(n) => n
         case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
       }
-      case None => 10
+      case None => 100
     }
 
     val indexedLabel = s"__indexed${targetCol}__"
@@ -50,20 +49,26 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
     featureIndexer.transform(afdf).show()
 
     val predictionName = s"__${modelName}_prediction__"
-    val rf = new GBTClassifier()
+    val gbt = new GBTClassifier()
       .setLabelCol(indexedLabel)
       .setFeaturesCol(indexedFeatures)
       .setPredictionCol(predictionName)
       .setRawPredictionCol("raw_prediction")
       .setProbabilityCol("probability_prediction")
-      //.setNumTrees(num)
+      // params taken from sklearn defaults
+      .setStepSize(0.1)
+      //numtrees
+      .setMaxDepth(3)
+      .setMinInstancesPerNode(1)
+      .setSubsamplingRate(1)
+
 
     val labelConverter = new IndexToString()
       .setInputCol(predictionName)
       .setOutputCol(modelName + "_prediction")
       .setLabels(labelIndexer.labels)
 
-    new Pipeline().setStages(Array(labelIndexer, featureAssembler, featureIndexer, rf, labelConverter))
+    new Pipeline().setStages(Array(labelIndexer, featureAssembler, featureIndexer, gbt, labelConverter))
   }
 
   def makePrediction(): (PipelineModel, DataFrame) = {
