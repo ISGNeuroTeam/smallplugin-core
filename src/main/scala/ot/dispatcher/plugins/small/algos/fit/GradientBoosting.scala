@@ -27,6 +27,39 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
       case None => 100
     }
 
+    val maxDepth = keywords.get("maxDepth") match{
+      case Some(m) => Try(m.toInt) match{
+        case Success(n) => n
+        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+      }
+      case None => 3
+    }
+
+    val learningRate = keywords.get("learningRate") match{
+      case Some(m) => Try(m.toFloat) match{
+        case Success(n) => n
+        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+      }
+      case None => 0.1
+    }
+
+    val iterationSubsample = keywords.get("iterationSubsample") match{
+      case Some(m) => Try(m.toFloat) match{
+        case Success(n) => n
+        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+      }
+      case None => 1
+    }
+
+    val minLeafSamples = keywords.get("minLeafSamples") match{
+      case Some(m) => Try(m.toInt) match{
+        case Success(n) => n
+        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+      }
+      case None => 1
+    }
+
+
     val indexedLabel = s"__indexed${targetCol}__"
     val labelIndexer = new StringIndexer()
       .setInputCol(targetCol)
@@ -56,11 +89,11 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
       .setRawPredictionCol("raw_prediction")
       .setProbabilityCol("probability_prediction")
       // params taken from sklearn defaults
-      .setStepSize(0.1)
+      .setStepSize(learningRate)
       //numtrees
-      .setMaxDepth(3)
-      .setMinInstancesPerNode(1)
-      .setSubsamplingRate(1)
+      .setMaxDepth(maxDepth)
+      .setMinInstancesPerNode(minLeafSamples)
+      .setSubsamplingRate(iterationSubsample)
 
 
     val labelConverter = new IndexToString()
