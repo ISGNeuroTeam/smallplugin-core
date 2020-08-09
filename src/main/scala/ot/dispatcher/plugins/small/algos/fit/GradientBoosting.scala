@@ -51,6 +51,14 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
       case None => 1
     }
 
+    val minInfoGain = keywords.get("minInfoGain") match{
+      case Some(m) => Try(m.toFloat) match{
+        case Success(n) => n
+        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+      }
+      case None => 0.0
+    }
+
     val minLeafSamples = keywords.get("minLeafSamples") match{
       case Some(m) => Try(m.toInt) match{
         case Success(n) => n
@@ -59,6 +67,13 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
       case None => 1
     }
 
+    val numTrees = keywords.get("numTrees") match{
+      case Some(m) => Try(m.toInt) match{
+        case Success(n) => n
+        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+      }
+      case None => 100
+    }
 
     val indexedLabel = s"__indexed${targetCol}__"
     val labelIndexer = new StringIndexer()
@@ -88,12 +103,12 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
       .setPredictionCol(predictionName)
       .setRawPredictionCol("raw_prediction")
       .setProbabilityCol("probability_prediction")
-      // params taken from sklearn defaults
-      .setStepSize(learningRate)
-      //numtrees
-      .setMaxDepth(maxDepth)
+      .setMinInfoGain(minInfoGain)
       .setMinInstancesPerNode(minLeafSamples)
+      .setStepSize(learningRate)
+      .setMaxDepth(maxDepth)
       .setSubsamplingRate(iterationSubsample)
+      .setMaxIter(numTrees)
 
 
     val labelConverter = new IndexToString()
