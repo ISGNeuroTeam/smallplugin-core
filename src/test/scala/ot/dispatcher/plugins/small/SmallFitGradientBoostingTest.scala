@@ -17,8 +17,8 @@ class SmallFitGradientBoostingTest extends CommandTest {
     val actual = execute(command)
     val expected =
       """[
-        |{"a":1,"class":"1a","b":2,"c":2,"target":1,"_time":1,"raw_prediction":{"type":1,"values":[0.0,9.0]},"probability_prediction":{"type":1,"values":[0.0,1.0]},"gb_test_prediction":"1a"},
-        |{"a":2,"class":"2b","b":3,"c":2,"target":2,"_time":1,"raw_prediction":{"type":1,"values":[6.0,3.0]},"probability_prediction":{"type":1,"values":[0.6666666666666666,0.3333333333333333]},"gb_test_prediction":"2b"}
+        |{"_time":1,"a":1,"b":2,"c":2,"class":"1a","target":1,"raw_prediction":{"type":1,"values":[-1.5435020027249835,1.5435020027249835]},"probability_prediction":{"type":1,"values":[0.04364652142729318,0.9563534785727068]},"gb_test_prediction":"1a"},
+        |{"_time":1,"a":2,"b":3,"c":2,"class":"2b","target":2,"raw_prediction":{"type":1,"values":[1.5435020027249835,-1.5435020027249835]},"probability_prediction":{"type":1,"values":[0.9563534785727067,0.043646521427293306]},"gb_test_prediction":"2b"}
         |]""".stripMargin
 
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
@@ -35,21 +35,21 @@ class SmallFitGradientBoostingTest extends CommandTest {
     val actual = execute(commandFit, commandApply)
     val expected =
       """[
-        |{"a":1,"class":"1a","b":2,"c":2,"target":1,"_time":1,"raw_prediction":{"type":1,"values":[0.0,9.0]},"probability_prediction":{"type":1,"values":[0.0,1.0]},"gb_test_prediction":"1a"},
-        |{"a":2,"class":"2b","b":3,"c":2,"target":2,"_time":1,"raw_prediction":{"type":1,"values":[6.0,3.0]},"probability_prediction":{"type":1,"values":[0.6666666666666666,0.3333333333333333]},"gb_test_prediction":"2b"}
+        |{"_time":1,"a":1,"b":2,"c":2,"class":"1a","target":1,"raw_prediction":{"type":1,"values":[-1.5435020027249835,1.5435020027249835]},"probability_prediction":{"type":1,"values":[0.04364652142729318,0.9563534785727068]},"gb_test_prediction":"1a"},
+        |{"_time":1,"a":2,"b":3,"c":2,"class":"2b","target":2,"raw_prediction":{"type":1,"values":[1.5435020027249835,-1.5435020027249835]},"probability_prediction":{"type":1,"values":[0.9563534785727067,0.043646521427293306]},"gb_test_prediction":"2b"}
         |]""".stripMargin
 
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
   }
 
   test("Test 2. Command: | fit gradient_boosting") {
-    val query = SimpleQuery(""" gradient_boosting max=2 class from a b c into gb_test""")
+    val query = SimpleQuery(""" gradient_boosting maxDepth=5 learningRate=0.05 iterationSubsample=0.5 class from a b c into gb_test""")
     val command = new SmallFit(query, utils)
     val actual = execute(command)
     val expected =
       """[
-        |{"a":1,"class":"1a","b":2,"c":2,"target":1,"_time":1,"raw_prediction":{"type":1,"values":[0.0,9.0]},"probability_prediction":{"type":1,"values":[0.0,1.0]},"gb_test_prediction":"1a"},
-        |{"a":2,"class":"2b","b":3,"c":2,"target":2,"_time":1,"raw_prediction":{"type":1,"values":[6.0,3.0]},"probability_prediction":{"type":1,"values":[0.6666666666666666,0.3333333333333333]},"gb_test_prediction":"2b"}
+        |{"_time":1,"a":1,"b":2,"c":2,"class":"1a","target":1,"raw_prediction":{"type":1,"values":[-0.5380109019975851,0.5380109019975851]},"probability_prediction":{"type":1,"values":[0.2542595912858634,0.7457404087141366]},"gb_test_prediction":"1a"},
+        |{"_time":1,"a":2,"b":3,"c":2,"class":"2b","target":2,"raw_prediction":{"type":1,"values":[0.4076465254614582,-0.4076465254614582]},"probability_prediction":{"type":1,"values":[0.693236272988668,0.30676372701133203]},"gb_test_prediction":"2b"}
         |]""".stripMargin
 
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
