@@ -38,7 +38,7 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
         Classification(featureCols, targetCol, _df, modelName, sq.searchId)
       case "random_forest" =>
         RandomForest(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
-      case "gradient_boosting" =>
+      case "gradient_boosting"|"gb"|"GradientBoosting" =>
         GradientBoosting(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
       case x => sendError(s" Algorithm with name '$x'  is unsupported at this moment")
     }
