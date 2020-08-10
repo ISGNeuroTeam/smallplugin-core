@@ -19,18 +19,10 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
       case None => 4
     }
 
-    val num = keywords.get("num") match{
-      case Some(m) => Try(m.toInt) match{
-        case Success(n) => n
-        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
-      }
-      case None => 100
-    }
-
     val maxDepth = keywords.get("maxDepth") match{
       case Some(m) => Try(m.toInt) match{
         case Success(n) => n
-        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+        case Failure(_) => sendError(searchId, "The value of parameter 'maxDepth' should be of int type")
       }
       case None => 3
     }
@@ -38,7 +30,7 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
     val learningRate = keywords.get("learningRate") match{
       case Some(m) => Try(m.toFloat) match{
         case Success(n) => n
-        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+        case Failure(_) => sendError(searchId, "The value of parameter 'learningRate' should be of float type")
       }
       case None => 0.1
     }
@@ -46,7 +38,7 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
     val iterationSubsample = keywords.get("iterationSubsample") match{
       case Some(m) => Try(m.toFloat) match{
         case Success(n) => n
-        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+        case Failure(_) => sendError(searchId, "The value of parameter 'iterationSubsample' should be of float type")
       }
       case None => 1
     }
@@ -54,7 +46,7 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
     val minInfoGain = keywords.get("minInfoGain") match{
       case Some(m) => Try(m.toFloat) match{
         case Success(n) => n
-        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+        case Failure(_) => sendError(searchId, "The value of parameter 'minInfoGain' should be of float type")
       }
       case None => 0.0
     }
@@ -62,7 +54,7 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
     val minLeafSamples = keywords.get("minLeafSamples") match{
       case Some(m) => Try(m.toInt) match{
         case Success(n) => n
-        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+        case Failure(_) => sendError(searchId, "The value of parameter 'minLeafSamples' should be of int type")
       }
       case None => 1
     }
@@ -70,9 +62,30 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
     val numTrees = keywords.get("numTrees") match{
       case Some(m) => Try(m.toInt) match{
         case Success(n) => n
-        case Failure(_) => sendError(searchId, "The value of parameter 'num' should be of int type")
+        case Failure(_) => sendError(searchId, "The value of parameter 'numTrees' should be of int type")
       }
       case None => 100
+    }
+
+    val maxBins = keywords.get("maxBins") match{
+      case Some(m) => Try(m.toInt) match{
+        case Success(n) => n
+        case Failure(_) => sendError(searchId, "The value of parameter 'maxBins' should be of int type")
+      }
+      case None => 32
+    }
+
+    val subsetStrategy = keywords.get("subsetStrategy") match{
+      case Some(m) => Try(m.toString) match{
+        case Success("auto")  => "auto"
+        case Success("all")  => "all"
+        case Success("onethird")  => "onethird"
+        case Success("sqrt")  => "sqrt"
+        case Success("log2")  => "log2"
+        case Success(n) => sendError(searchId, "No such strategy. Available strategies: auto, all, onethird, sqrt, log2")
+        case Failure(_) => sendError(searchId, "The value of parameter 'subsetStrategy' should be of string type")
+      }
+      case None => "auto"
     }
 
     val indexedLabel = s"__indexed${targetCol}__"
@@ -109,6 +122,8 @@ case class GradientBoosting(featureCols: List[String], targetCol: String, dataFr
       .setMaxDepth(maxDepth)
       .setSubsamplingRate(iterationSubsample)
       .setMaxIter(numTrees)
+      .setMaxBins(maxBins)
+      .setFeatureSubsetStrategy(subsetStrategy)
 
 
     val labelConverter = new IndexToString()
