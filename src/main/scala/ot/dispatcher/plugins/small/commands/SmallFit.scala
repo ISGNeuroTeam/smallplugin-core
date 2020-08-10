@@ -34,11 +34,11 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
         LinearRegression(featureCols, targetCol, _df, modelName, sq.searchId)
       case "clustering" =>
         Clustering(featureCols, _df, getKeywords(), modelName, sq.searchId, utils)
-      case "classification" =>
+      case "classification"|"classifier logreg" =>
         Classification(featureCols, targetCol, _df, modelName, sq.searchId)
-      case "random_forest" =>
+      case "random_forest"|"classifier rf" =>
         RandomForest(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
-      case "gradient_boosting"|"gb"|"GradientBoosting" =>
+      case "gradient_boosting"|"gb"|"GradientBoosting"|"classifier gb" =>
         GradientBoosting(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
       case x => sendError(s" Algorithm with name '$x'  is unsupported at this moment")
     }
