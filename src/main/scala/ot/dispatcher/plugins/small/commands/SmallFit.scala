@@ -12,7 +12,7 @@ import ot.dispatcher.sdk.{PluginCommand, PluginUtils}
 class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, utils: PluginUtils, Set("from", "into")) {
   val smallUtils = new SmallModelsUtils(utils)
   import smallUtils._
-  val supervisedAlgos = Set("regression", "classification", "random_forest", "gradient_boosting")
+  val supervisedAlgos = Set("regression", "classification", "random_forest", "classification_gradient_boosting", "regression_gradient_boosting")
   val featureCols = getPositional("from").getOrElse(List()).map(_.stripBackticks())
   val (algoname, targetCol) = mainArgs match {
     case Nil => sendError("Algorithm name is not specified")
