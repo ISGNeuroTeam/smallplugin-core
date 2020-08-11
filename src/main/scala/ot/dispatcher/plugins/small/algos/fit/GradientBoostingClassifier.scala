@@ -8,7 +8,7 @@ import ot.dispatcher.sdk.PluginUtils
 
 import scala.util.{Failure, Success, Try}
 
-case class GradientBoosting(featureCols: List[String], targetCol: String, dataFrame: DataFrame, modelName: String, keywords: Map[String,String], searchId:Int, utils: PluginUtils) extends FitAlgorithm {
+case class GradientBoostingClassifier(featureCols: List[String], targetCol: String, dataFrame: DataFrame, modelName: String, keywords: Map[String,String], searchId:Int, utils: PluginUtils) extends FitAlgorithm {
   import utils._
   def createPipeline() = {
     val max = keywords.get("max") match{

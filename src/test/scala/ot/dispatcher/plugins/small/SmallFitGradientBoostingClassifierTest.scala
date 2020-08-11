@@ -5,7 +5,7 @@ import ot.dispatcher.sdk.core.SimpleQuery
 import ot.dispatcher.sdk.test.CommandTest
 
 
-class SmallFitGradientBoostingTest extends CommandTest {
+class SmallFitGradientBoostingClassifierTest extends CommandTest {
   val dataset: String =
     """[
       |{"_time":1,"a":1, "b":2, "c":2, "target":1, "class":"1a" },
