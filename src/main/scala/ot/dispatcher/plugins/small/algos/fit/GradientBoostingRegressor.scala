@@ -88,6 +88,16 @@ case class GradientBoostingRegressor(featureCols: List[String], targetCol: Strin
       case None => "auto"
     }
 
+    val lossType = keywords.get("lossType") match{
+      case Some(m) => Try(m.toString) match{
+        case Success("squared")  => "squared"
+        case Success("absolute")  => "absolute"
+        case Success(n) => sendError(searchId, "No such loss type. Available types: squared, absolute")
+        case Failure(_) => sendError(searchId, "The value of parameter 'lossType' should be of string type")
+      }
+      case None => "squared"
+    }
+
     val indexedLabel = s"__indexed${targetCol}__"
     val labelIndexer = new StringIndexer()
       .setInputCol(targetCol)
@@ -122,6 +132,7 @@ case class GradientBoostingRegressor(featureCols: List[String], targetCol: Strin
       .setMaxIter(numTrees)
       .setMaxBins(maxBins)
       .setFeatureSubsetStrategy(subsetStrategy)
+      .setLossType(lossType)
 
 
     val labelConverter = new IndexToString()
