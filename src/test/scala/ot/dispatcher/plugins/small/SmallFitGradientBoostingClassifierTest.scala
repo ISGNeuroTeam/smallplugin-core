@@ -29,7 +29,7 @@ class SmallFitGradientBoostingClassifierTest extends CommandTest {
 
 
   test("Test 0. Command: | fit gradient_boosting") {
-    val query = SimpleQuery(""" gb class from a b c into gb_test""")
+    val query = SimpleQuery(""" class_gb class from a b c into gb_test""")
     val command = new SmallFit(query, utils)
     val actual = execute(command)
     val expected =
@@ -54,7 +54,7 @@ class SmallFitGradientBoostingClassifierTest extends CommandTest {
 
 
   test("Test 1. Command: | apply gradient_boosting") {
-    val queryFit = SimpleQuery(""" gb class from a b c into gb_test""")
+    val queryFit = SimpleQuery(""" class_gb class from a b c into gb_test""")
     val commandFit = new SmallFit(queryFit, utils)
 
     val queryApply = SimpleQuery("""gb_test""")
@@ -82,7 +82,7 @@ class SmallFitGradientBoostingClassifierTest extends CommandTest {
   }
 
   test("Test 2. Command: | fit gradient_boosting") {
-    val query = SimpleQuery(""" gradient_boosting maxDepth=5 learningRate=0.05 iterationSubsample=0.5 subsetStrategy=auto class from a b c into gb_test""")
+    val query = SimpleQuery(""" classification_gradient_boosting maxDepth=5 learningRate=0.05 iterationSubsample=0.5 subsetStrategy=auto class from a b c into gb_test""")
     val command = new SmallFit(query, utils)
     val actual = execute(command)
     val expected =
@@ -109,7 +109,7 @@ class SmallFitGradientBoostingClassifierTest extends CommandTest {
     var dataset: String =
       """[{"_time":1,"a":1, "b": "green","c": 2, "target":1,"class":"1a" },
         | {"_time":1,"a":2, "b": "yellow","c": 2, "target":2, "class":"2b" }]""".stripMargin
-    val query = SimpleQuery(""" gradient_boosting class from a b c into gb_test""")
+    val query = SimpleQuery(""" classification_gradient_boosting class from a b c into gb_test""")
     val command = new SmallFit(query, utils)
     val actual = execute(command)
     val expected =
@@ -125,7 +125,7 @@ class SmallFitGradientBoostingClassifierTest extends CommandTest {
     var dataset: String =
       """[{"_time":1,"a":1, "b": "","c": 2, "target":1,"class":"1a" },
         | {"_time":1,"a":2, "b": "","c": 2, "target":2, "class":"2b" }]""".stripMargin
-    val query = SimpleQuery(""" gradient_boosting class from a b c into gb_test""")
+    val query = SimpleQuery(""" classification_gradient_boosting class from a b c into gb_test""")
     val command = new SmallFit(query, utils)
     val actual = execute(command)
     val expected =
@@ -141,7 +141,7 @@ class SmallFitGradientBoostingClassifierTest extends CommandTest {
     var dataset: String =
       """[{"_time":1,"a":1, "b": "2","c": 2, "d": 2, "target":1,"class":"1a" },
         | {"_time":1,"a":2, "b": "3","c": 2, "d": 4, "target":2, "class":"2b" }]""".stripMargin
-    val queryFit = SimpleQuery(""" gradient_boosting class from a b c into gb_test""")
+    val queryFit = SimpleQuery(""" classification_gradient_boosting class from a b c into gb_test""")
     val commandFit = new SmallFit(queryFit, utils)
 
     val queryApply = SimpleQuery("""gb_test""")

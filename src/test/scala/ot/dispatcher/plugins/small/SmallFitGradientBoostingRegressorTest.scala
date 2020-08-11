@@ -25,25 +25,25 @@ class SmallFitGradientBoostingRegressorTest extends CommandTest {
       | ]""".stripMargin
 
   test("Test 0. Command: | fit regression") {
-    val queryFit = SimpleQuery("""regression_gb target from a b c""")
+    val queryFit = SimpleQuery("""reg_gb target from a b c""")
     val commandFit = new SmallFit(queryFit, utils)
     val actual = execute(commandFit)
     val expected =
       """[
-        |{"_time":1,"a":1,"b":1,"c":2,"target":1,"regression_gb--1_prediction":"1"},
-        |{"_time":1,"a":2,"b":1,"c":2,"target":2,"regression_gb--1_prediction":"20"},
-        |{"_time":1,"a":3,"b":1,"c":2,"target":3,"regression_gb--1_prediction":"7"},
-        |{"_time":1,"a":4,"b":1,"c":2,"target":4,"regression_gb--1_prediction":"4"},
-        |{"_time":1,"a":5,"b":1,"c":2,"target":5,"regression_gb--1_prediction":"5"},
-        |{"_time":1,"a":6,"b":1,"c":2,"target":6,"regression_gb--1_prediction":"5"},
-        |{"_time":1,"a":7,"b":2,"c":2,"target":7,"regression_gb--1_prediction":"18"},
-        |{"_time":1,"a":8,"b":2,"c":2,"target":16,"regression_gb--1_prediction":"16"},
-        |{"_time":1,"a":9,"b":2,"c":2,"target":18,"regression_gb--1_prediction":"2"},
-        |{"_time":1,"a":10,"b":2,"c":2,"target":20,"regression_gb--1_prediction":"20"},
-        |{"_time":1,"a":11,"b":2,"c":2,"target":22,"regression_gb--1_prediction":"22"},
-        |{"_time":1,"a":12,"b":2,"c":2,"target":24,"regression_gb--1_prediction":"26"},
-        |{"_time":1,"a":13,"b":2,"c":2,"target":26,"regression_gb--1_prediction":"26"},
-        |{"_time":1,"a":14,"b":2,"c":2,"target":28,"regression_gb--1_prediction":"3"}
+        |{"_time":1,"a":1,"b":1,"c":2,"target":1,"reg_gb--1_prediction":"1"},
+        |{"_time":1,"a":2,"b":1,"c":2,"target":2,"reg_gb--1_prediction":"20"},
+        |{"_time":1,"a":3,"b":1,"c":2,"target":3,"reg_gb--1_prediction":"7"},
+        |{"_time":1,"a":4,"b":1,"c":2,"target":4,"reg_gb--1_prediction":"4"},
+        |{"_time":1,"a":5,"b":1,"c":2,"target":5,"reg_gb--1_prediction":"5"},
+        |{"_time":1,"a":6,"b":1,"c":2,"target":6,"reg_gb--1_prediction":"5"},
+        |{"_time":1,"a":7,"b":2,"c":2,"target":7,"reg_gb--1_prediction":"18"},
+        |{"_time":1,"a":8,"b":2,"c":2,"target":16,"reg_gb--1_prediction":"16"},
+        |{"_time":1,"a":9,"b":2,"c":2,"target":18,"reg_gb--1_prediction":"2"},
+        |{"_time":1,"a":10,"b":2,"c":2,"target":20,"reg_gb--1_prediction":"20"},
+        |{"_time":1,"a":11,"b":2,"c":2,"target":22,"reg_gb--1_prediction":"22"},
+        |{"_time":1,"a":12,"b":2,"c":2,"target":24,"reg_gb--1_prediction":"26"},
+        |{"_time":1,"a":13,"b":2,"c":2,"target":26,"reg_gb--1_prediction":"26"},
+        |{"_time":1,"a":14,"b":2,"c":2,"target":28,"reg_gb--1_prediction":"3"}
         |]""".stripMargin
 
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
