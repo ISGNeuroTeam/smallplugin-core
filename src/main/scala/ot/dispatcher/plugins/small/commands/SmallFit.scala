@@ -2,7 +2,7 @@ package ot.dispatcher.plugins.small.commands
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.NumericType
-import ot.dispatcher.plugins.small.algos.fit.{Classification, Clustering, GradientBoostingClassifier, GradientBoostingRegressor, LinearRegression, RandomForest}
+import ot.dispatcher.plugins.small.algos.fit._
 import ot.dispatcher.plugins.small.utils.SmallModelsUtils
 import ot.dispatcher.sdk.core.SimpleQuery
 import ot.dispatcher.sdk.core.extensions.StringExt._
@@ -12,7 +12,7 @@ import ot.dispatcher.sdk.{PluginCommand, PluginUtils}
 class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, utils: PluginUtils, Set("from", "into")) {
   val smallUtils = new SmallModelsUtils(utils)
   import smallUtils._
-  val supervisedAlgos = Set("regression", "classification", "random_forest", "classification_gradient_boosting", "regression_gradient_boosting")
+  val supervisedAlgos = Set("regression", "classification", "random_forest", "classification_gradient_boosting", "regression_gradient_boosting", "classification_random_forest", "regression_random_forest")
   val featureCols = getPositional("from").getOrElse(List()).map(_.stripBackticks())
   val (algoname, targetCol) = mainArgs match {
     case Nil => sendError("Algorithm name is not specified")
@@ -36,8 +36,10 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
         Clustering(featureCols, _df, getKeywords(), modelName, sq.searchId, utils)
       case "classification"|"classifier_logreg" =>
         Classification(featureCols, targetCol, _df, modelName, sq.searchId)
-      case "random_forest"|"classifier_rf" =>
-        RandomForest(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
+      case "classification_random_forest"|"classifier_rf"|"class_rf" =>
+        RandomForestClassifier(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
+      case "regression_random_forest"|"regressor_rf"|"reg_rf" =>
+        RandomForestRegresor(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
       case "classification_gradient_boosting"|"class_gb"|"class_GradientBoosting"|"classifier_gb" =>
         GradientBoostingClassifier(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
       case "regression_gradient_boosting"|"reg_gb"|"reg_GradientBoosting"|"regression_gb" =>
