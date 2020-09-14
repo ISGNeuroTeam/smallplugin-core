@@ -1,8 +1,9 @@
-package ot.dispatcher.plugins.small.evaluate
+package ot.dispatcher.plugins.small.algos.evaluate
 
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.ml.stat.Summarizer
+import ot.dispatcher.plugins.small.evaluate.EvaluateMetric
 
 /**
  * Evaluator for regression
