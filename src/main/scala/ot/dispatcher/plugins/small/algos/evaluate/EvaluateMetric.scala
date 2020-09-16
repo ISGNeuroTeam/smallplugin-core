@@ -1,4 +1,4 @@
-package ot.dispatcher.plugins.small.evaluate
+package ot.dispatcher.plugins.small.algos.evaluate
 
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.sql.DataFrame
