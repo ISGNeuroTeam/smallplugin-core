@@ -1,6 +1,6 @@
-name := "small-plugin-core"
+name := "smallPlugin"
 
-version := "0.0.0"
+version := "1.1.1_release_1.2.0"
 
 scalaVersion := "2.11.12"
 
