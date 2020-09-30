@@ -4,6 +4,7 @@ import org.apache.spark.ml.regression.GBTRegressor
 import org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorAssembler, VectorIndexer}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.sql.DataFrame
+import ot.dispatcher.plugins.small.sdk.FitModel
 import ot.dispatcher.sdk.PluginUtils
 
 import scala.util.{Failure, Success, Try}
@@ -150,5 +151,18 @@ case class GradientBoostingRegressor(featureCols: List[String], targetCol: Strin
     (pModel, rdf)
   }
 
+}
+
+object GradientBoostingRegressor extends FitModel {
+  override def fit(modelName: String, searchId: Int, featureCols: List[String], targetCol: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => (PipelineModel, DataFrame) =
+    df => {
+      val model = targetCol
+        .map(GradientBoostingRegressor(featureCols, _, df, modelName, keywords, searchId, utils))
+        .getOrElse(
+          utils.sendError(searchId, "Target column name is not provided.")
+        )
+
+      model.makePrediction()
+    }
 }
 

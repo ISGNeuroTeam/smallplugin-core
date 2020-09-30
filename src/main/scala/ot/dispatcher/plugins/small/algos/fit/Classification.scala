@@ -3,6 +3,8 @@ package ot.dispatcher.plugins.small.algos.fit
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorAssembler}
 import org.apache.spark.sql.DataFrame
+import ot.dispatcher.plugins.small.sdk.FitModel
+import ot.dispatcher.sdk.PluginUtils
 
 case class Classification (featureCols: List[String], targetCol: String, dataFrame: DataFrame, modelName: String, searchId:Int) extends FitAlgorithm {
 
@@ -42,5 +44,17 @@ case class Classification (featureCols: List[String], targetCol: String, dataFra
     val rdf = pModel.transform(df).drop(s"__${modelName}_features__")
     (pModel, rdf)
   }
+}
+
+object Classification extends FitModel {
+  override def fit(modelName: String, searchId: Int, featureCols: List[String], targetCol: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => (PipelineModel, DataFrame) =
+    df => {
+      val model = targetCol
+        .map(Classification(featureCols, _, df, modelName, searchId))
+        .getOrElse(
+          utils.sendError(searchId, "Target column name is not provided.")
+        )
+      model.makePrediction()
+    }
 }
 

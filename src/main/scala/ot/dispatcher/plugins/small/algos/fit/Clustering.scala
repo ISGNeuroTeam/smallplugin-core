@@ -1,12 +1,13 @@
 package ot.dispatcher.plugins.small.algos.fit
 
-import org.apache.spark.ml.Pipeline
+import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.clustering.KMeansModel
 import org.apache.spark.ml.feature.VectorAssembler
 import org.apache.spark.sql.DataFrame
 import ot.dispatcher.sdk.{PluginConfig, PluginUtils}
 import org.apache.spark.ml.clustering.KMeans
 import org.apache.spark.ml.evaluation.ClusteringEvaluator
+import ot.dispatcher.plugins.small.sdk.FitModel
 
 import scala.util.{Failure, Success, Try}
 
@@ -56,4 +57,10 @@ case class Clustering(fieldsUsed: List[String], dataFrame: DataFrame, properties
       }
     }
   }
+}
+
+object Clustering extends FitModel {
+  override def fit(modelName: String, searchId: Int, featureCols: List[String], targetCol: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => (PipelineModel, DataFrame) =
+    Clustering(featureCols, _, keywords, modelName, searchId, utils)
+      .makePrediction()
 }

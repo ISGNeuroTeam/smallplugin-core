@@ -3,6 +3,8 @@ package ot.dispatcher.plugins.small.algos.fit
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.feature.VectorAssembler
 import org.apache.spark.sql.DataFrame
+import ot.dispatcher.plugins.small.sdk.FitModel
+import ot.dispatcher.sdk.PluginUtils
 
 case class LinearRegression(featureCols: List[String], targetCol: String, dataFrame: DataFrame, modelName: String, searchId:Int) extends FitAlgorithm {
   def createPipeline(): Pipeline = {
@@ -28,6 +30,18 @@ case class LinearRegression(featureCols: List[String], targetCol: String, dataFr
     val rdf = pModel.transform(df).drop(s"__${modelName}_features__")
     (pModel, rdf)
   }
+}
+
+object LinearRegression extends FitModel {
+  override def fit(modelName: String, searchId: Int, featureCols: List[String], targetCol: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => (PipelineModel, DataFrame) =
+    df => {
+      targetCol
+        .map(LinearRegression(featureCols, _, df, modelName, searchId))
+        .map(_.makePrediction())
+        .getOrElse(
+          utils.sendError(searchId, "Target column name is not provided.")
+        )
+    }
 }
 
 
