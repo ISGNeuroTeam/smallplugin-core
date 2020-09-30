@@ -45,7 +45,7 @@ class SmallApply(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
           targetName = targetName,
           keywords = getKeywords(),
           utils = utils
-        ) _
+        )
       )
       .orElse(
         Try(
