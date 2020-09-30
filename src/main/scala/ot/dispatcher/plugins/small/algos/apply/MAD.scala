@@ -4,6 +4,7 @@ import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.{Column, DataFrame}
 import ot.dispatcher.sdk.PluginUtils
 import org.apache.spark.sql.functions._
+import ot.dispatcher.plugins.small.sdk.ApplyModel
 
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
@@ -29,4 +30,11 @@ case class MAD(fieldsUsed: List[String], properties:Map[String, String], searchI
   }
 
 
+}
+
+object MAD extends ApplyModel {
+  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils)(df: DataFrame): DataFrame = {
+    val model = MAD(featureCols, keywords, searchId, utils)
+    model.makePrediction(df)
+  }
 }

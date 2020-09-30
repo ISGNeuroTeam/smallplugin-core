@@ -3,6 +3,7 @@ package ot.dispatcher.plugins.small.algos.apply
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.max
 import ot.dispatcher.plugins.small.algos.fit.LinearRegression
+import ot.dispatcher.plugins.small.sdk.ApplyModel
 import ot.dispatcher.sdk.PluginUtils
 import ot.dispatcher.sdk.core.extensions.DataFrameExt._
 import ot.dispatcher.sdk.core.functions.Datetime
@@ -37,5 +38,14 @@ case class Predict(targetCol: String, keywords: Map[String, String], id: Int, ut
     val res1 = res.drop(serviceCols : _*).withSafeColumnRenamed("temp_prediction", "prediction")
     printDfHeadToLog(log, id, res1)
     res1
+  }
+}
+
+object Predict extends ApplyModel {
+  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils)(df: DataFrame): DataFrame = {
+    val predictModel = targetName
+      .map(Predict(_, keywords, searchId, utils))
+      .getOrElse(utils.sendError(searchId, "Value column name is not specified"))
+    predictModel.makePrediction(df)
   }
 }

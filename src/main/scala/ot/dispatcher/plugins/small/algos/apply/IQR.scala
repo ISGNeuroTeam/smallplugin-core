@@ -1,6 +1,7 @@
 package ot.dispatcher.plugins.small.algos.apply
 
 import org.apache.spark.sql.{Column, DataFrame}
+import ot.dispatcher.plugins.small.sdk.ApplyModel
 import ot.dispatcher.sdk.PluginUtils
 
 import scala.util.{Failure, Success, Try}
@@ -50,4 +51,11 @@ case class IQR(fieldsUsed: List[String], properties:Map[String, String], searchI
   }
 
 
+}
+
+object IQR extends ApplyModel {
+  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils)(df: DataFrame): DataFrame = {
+    val model = IQR(featureCols, keywords, searchId, utils)
+    model.makePrediction(df)
+  }
 }

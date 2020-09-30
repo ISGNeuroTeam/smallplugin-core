@@ -1,5 +1,6 @@
 package ot.dispatcher.plugins.small.algos.apply
 import org.apache.spark.sql.DataFrame
+import ot.dispatcher.plugins.small.sdk.ApplyModel
 import ot.dispatcher.sdk.PluginUtils
 
 import scala.util.{Failure, Success, Try}
@@ -31,5 +32,14 @@ case class Anomaly(targetCol: String, keywords: Map[String, String], id: Int, ut
                    | fields - av, std"""
 
     executeQuery(query, df)
+  }
+}
+
+object Anomaly extends ApplyModel {
+  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils)(df: DataFrame): DataFrame = {
+    val anomalyModel = targetName
+      .map(Anomaly(_, keywords, searchId, utils))
+      .getOrElse(utils.sendError(searchId, "Value column name is not specified"))
+    anomalyModel.makePrediction(df)
   }
 }

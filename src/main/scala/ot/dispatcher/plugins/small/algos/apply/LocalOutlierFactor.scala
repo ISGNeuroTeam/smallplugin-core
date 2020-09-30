@@ -4,6 +4,7 @@ import org.apache.spark.sql.DataFrame
 import ot.dispatcher.sdk.PluginUtils
 import org.apache.spark.ml.outlier._
 import org.apache.spark.ml.feature.VectorAssembler
+import ot.dispatcher.plugins.small.sdk.ApplyModel
 
 import scala.util.{Failure, Success, Try}
 
@@ -38,5 +39,12 @@ case class LocalOutlierFactor(featureCols: List[String], keywords: Map[String, S
       .transform(data)
 
     result
+  }
+}
+
+object LocalOutlierFactor extends ApplyModel {
+  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils)(df: DataFrame): DataFrame = {
+    val model = LocalOutlierFactor(featureCols, keywords, searchId, utils)
+    model.makePrediction(df)
   }
 }
