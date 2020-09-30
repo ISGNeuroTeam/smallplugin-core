@@ -36,10 +36,10 @@ case class Anomaly(targetCol: String, keywords: Map[String, String], id: Int, ut
 }
 
 object Anomaly extends ApplyModel {
-  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils)(df: DataFrame): DataFrame = {
+  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => DataFrame = {
     val anomalyModel = targetName
       .map(Anomaly(_, keywords, searchId, utils))
       .getOrElse(utils.sendError(searchId, "Value column name is not specified"))
-    anomalyModel.makePrediction(df)
+    anomalyModel.makePrediction
   }
 }

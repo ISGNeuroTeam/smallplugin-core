@@ -42,10 +42,10 @@ case class Predict(targetCol: String, keywords: Map[String, String], id: Int, ut
 }
 
 object Predict extends ApplyModel {
-  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils)(df: DataFrame): DataFrame = {
+  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame =>DataFrame = {
     val predictModel = targetName
       .map(Predict(_, keywords, searchId, utils))
       .getOrElse(utils.sendError(searchId, "Value column name is not specified"))
-    predictModel.makePrediction(df)
+    predictModel.makePrediction
   }
 }

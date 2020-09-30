@@ -17,7 +17,10 @@ class SmallApply(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
     case Nil => sendError("Algorithm or model name is not specified")
     case h::_ => h
   }
-  private def getTargetName() = mainArgs.lift(1).map(_.stripBackticks())
+  private lazy val targetName: Option[String] =
+    mainArgs.lift(1)
+      .map(_.stripBackticks())
+
 
   def transform(_df: DataFrame): DataFrame = {
 //    val algo = algoname match {
@@ -39,7 +42,7 @@ class SmallApply(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
         model.apply(
           searchId = sq.searchId,
           featureCols = featureCols,
-          targetName = getTargetName(),
+          targetName = targetName,
           keywords = getKeywords(),
           utils = utils
         ) _

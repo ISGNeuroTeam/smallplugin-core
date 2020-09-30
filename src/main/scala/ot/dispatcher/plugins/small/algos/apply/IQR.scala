@@ -54,8 +54,8 @@ case class IQR(fieldsUsed: List[String], properties:Map[String, String], searchI
 }
 
 object IQR extends ApplyModel {
-  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils)(df: DataFrame): DataFrame = {
+  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => DataFrame = {
     val model = IQR(featureCols, keywords, searchId, utils)
-    model.makePrediction(df)
+    model.makePrediction
   }
 }

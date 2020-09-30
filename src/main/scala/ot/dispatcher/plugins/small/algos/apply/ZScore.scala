@@ -67,8 +67,8 @@ case class ZScore(fieldsUsed: List[String], properties:Map[String, String], sear
 }
 
 object ZScore extends ApplyModel {
-  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils)(df: DataFrame): DataFrame = {
+  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => DataFrame = {
     val model = ZScore(featureCols, keywords, searchId, utils)
-    model.makePrediction(df)
+    model.makePrediction
   }
 }
