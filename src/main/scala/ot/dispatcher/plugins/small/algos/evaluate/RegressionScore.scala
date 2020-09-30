@@ -4,6 +4,7 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.ml.stat.Summarizer
 import ot.dispatcher.plugins.small.algos.evaluate.EvaluateMetric
+import ot.dispatcher.plugins.small.sdk.ScoreModel
 
 /**
  * Evaluator for regression
@@ -130,4 +131,13 @@ case class RegressionScore(labelCol: String, predictionCol: List[String], dataFr
     resultDf
   }
 
+}
+
+object RegressionScore extends ScoreModel {
+  override def score(searchId: Int, labelCol: String, predictionCol: List[String], metricName: String, featuresNumber: Double): DataFrame => DataFrame =
+    df => {
+      val model = RegressionScore(labelCol, predictionCol, df, metricName, featuresNumber, searchId)
+
+      model.makeEvaluate()
+    }
 }
