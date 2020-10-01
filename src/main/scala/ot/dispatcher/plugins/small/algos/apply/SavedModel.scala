@@ -7,9 +7,9 @@ import ot.dispatcher.sdk.PluginUtils
 
 import scala.util.{Failure, Success, Try}
 
-case class SavedModel(modelName: String, id: Int, utils: PluginUtils) extends SmallModelsUtils(utils) with ApplyAlgorithm {
+case class SavedModel(modelName: String, id: Int, utils: PluginUtils) extends SmallModelsUtils(utils) {
   import utils._
-  override def makePrediction(df: DataFrame): DataFrame = {
+  def makePrediction(df: DataFrame): DataFrame = {
     val model = Try(loadExisting(modelName, id)) match {
       case Success(x) => x
       case Failure(e) => sendError(id, s"Model with name '$modelName' is not found")

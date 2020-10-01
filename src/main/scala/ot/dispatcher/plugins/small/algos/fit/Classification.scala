@@ -6,7 +6,7 @@ import org.apache.spark.sql.DataFrame
 import ot.dispatcher.plugins.small.sdk.FitModel
 import ot.dispatcher.sdk.PluginUtils
 
-case class Classification (featureCols: List[String], targetCol: String, dataFrame: DataFrame, modelName: String, searchId:Int) extends FitAlgorithm {
+case class Classification (featureCols: List[String], targetCol: String, dataFrame: DataFrame, modelName: String, searchId:Int) {
 
   import org.apache.spark.ml.classification.LogisticRegression
 

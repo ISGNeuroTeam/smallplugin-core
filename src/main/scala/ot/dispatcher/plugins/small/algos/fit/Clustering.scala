@@ -11,7 +11,7 @@ import ot.dispatcher.plugins.small.sdk.FitModel
 
 import scala.util.{Failure, Success, Try}
 
-case class Clustering(fieldsUsed: List[String], dataFrame: DataFrame, properties:Map[String, String], modelName: String, searchId:Int, utils: PluginUtils) extends FitAlgorithm {
+case class Clustering(fieldsUsed: List[String], dataFrame: DataFrame, properties:Map[String, String], modelName: String, searchId:Int, utils: PluginUtils) {
   import utils._
   val kRange = getRange("num")
 

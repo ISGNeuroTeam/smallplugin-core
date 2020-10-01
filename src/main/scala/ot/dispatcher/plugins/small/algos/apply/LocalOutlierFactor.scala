@@ -8,9 +8,9 @@ import ot.dispatcher.plugins.small.sdk.ApplyModel
 
 import scala.util.{Failure, Success, Try}
 
-case class LocalOutlierFactor(featureCols: List[String], keywords: Map[String, String], id: Int, utils: PluginUtils) extends ApplyAlgorithm{
+case class LocalOutlierFactor(featureCols: List[String], keywords: Map[String, String], id: Int, utils: PluginUtils) {
   import utils._
-  override def makePrediction(df: DataFrame): DataFrame = {
+  def makePrediction(df: DataFrame): DataFrame = {
     val DefaultMinPts = 5
 //    val DefaultDistType = "euclidean"
 

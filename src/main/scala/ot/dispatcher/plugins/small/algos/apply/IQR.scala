@@ -6,10 +6,10 @@ import ot.dispatcher.sdk.PluginUtils
 
 import scala.util.{Failure, Success, Try}
 
-case class IQR(fieldsUsed: List[String], properties:Map[String, String], searchId:Int, utils: PluginUtils) extends ApplyAlgorithm {
+case class IQR(fieldsUsed: List[String], properties:Map[String, String], searchId:Int, utils: PluginUtils) {
   import utils._
 
-  override def makePrediction(dataFrame: DataFrame) = {
+  def makePrediction(dataFrame: DataFrame) = {
 
     val List(q1, q3) = properties.get("range") match {
       case Some(m) => m.filterNot(c => c  == '(' || c == ')' || c == ' ').split(",").map(_.toDouble).toList

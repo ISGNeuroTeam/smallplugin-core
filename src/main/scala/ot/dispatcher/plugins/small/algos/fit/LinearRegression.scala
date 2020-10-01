@@ -6,7 +6,7 @@ import org.apache.spark.sql.DataFrame
 import ot.dispatcher.plugins.small.sdk.FitModel
 import ot.dispatcher.sdk.PluginUtils
 
-case class LinearRegression(featureCols: List[String], targetCol: String, dataFrame: DataFrame, modelName: String, searchId:Int) extends FitAlgorithm {
+case class LinearRegression(featureCols: List[String], targetCol: String, dataFrame: DataFrame, modelName: String, searchId:Int) {
   def createPipeline(): Pipeline = {
     val featuresName = s"__${modelName}_features__"
     val assembler = new VectorAssembler()

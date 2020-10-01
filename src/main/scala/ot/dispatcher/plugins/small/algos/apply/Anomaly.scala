@@ -5,9 +5,9 @@ import ot.dispatcher.sdk.PluginUtils
 
 import scala.util.{Failure, Success, Try}
 
-case class Anomaly(targetCol: String, keywords: Map[String, String], id: Int, utils: PluginUtils) extends ApplyAlgorithm{
+case class Anomaly(targetCol: String, keywords: Map[String, String], id: Int, utils: PluginUtils) {
   import utils._
-  override def makePrediction(df: DataFrame): DataFrame = {
+  def makePrediction(df: DataFrame): DataFrame = {
     val DefaultWindow = 100
     val DefaultTolerance = 3
     val window = keywords.get("window") match {

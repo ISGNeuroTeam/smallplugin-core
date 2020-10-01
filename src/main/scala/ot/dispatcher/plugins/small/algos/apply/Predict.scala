@@ -10,10 +10,10 @@ import ot.dispatcher.sdk.core.functions.Datetime
 
 import scala.util.{Failure, Success, Try}
 
-case class Predict(targetCol: String, keywords: Map[String, String], id: Int, utils: PluginUtils) extends ApplyAlgorithm{
+case class Predict(targetCol: String, keywords: Map[String, String], id: Int, utils: PluginUtils) {
   import utils._
   val log = getLoggerFor(this.getClass.getName())
-  override def makePrediction(df: DataFrame): DataFrame = {
+  def makePrediction(df: DataFrame): DataFrame = {
     val DefaultNum = 100
     val future = keywords.get("future") match {
       case Some(x) => Try(x.toInt) match {

@@ -8,7 +8,7 @@ import ot.dispatcher.plugins.small.sdk.ApplyModel
 
 import scala.util.{Failure, Success, Try}
 
-case class ZScore(fieldsUsed: List[String], properties:Map[String, String], searchId:Int, utils: PluginUtils) extends ApplyAlgorithm {
+case class ZScore(fieldsUsed: List[String], properties:Map[String, String], searchId:Int, utils: PluginUtils) {
   import utils._
 
   // columns to group window by

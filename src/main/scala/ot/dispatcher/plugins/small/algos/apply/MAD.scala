@@ -9,10 +9,10 @@ import ot.dispatcher.plugins.small.sdk.ApplyModel
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
-case class MAD(fieldsUsed: List[String], properties:Map[String, String], searchId:Int, utils: PluginUtils) extends ApplyAlgorithm {
+case class MAD(fieldsUsed: List[String], properties:Map[String, String], searchId:Int, utils: PluginUtils) {
   import utils._
 
-  override def makePrediction(dataFrame: DataFrame) = {
+  def makePrediction(dataFrame: DataFrame) = {
 
     def mad(df: DataFrame, fields: List[String]): DataFrame = {
       var result = df
