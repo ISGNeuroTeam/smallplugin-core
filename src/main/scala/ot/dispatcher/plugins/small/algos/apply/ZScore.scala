@@ -1,5 +1,6 @@
 package ot.dispatcher.plugins.small.algos.apply
 
+import com.typesafe.config.Config
 import org.apache.spark.sql.{Column, DataFrame}
 import ot.dispatcher.sdk.PluginUtils
 import org.apache.spark.sql.expressions.Window
@@ -67,7 +68,7 @@ case class ZScore(fieldsUsed: List[String], properties:Map[String, String], sear
 }
 
 object ZScore extends ApplyModel {
-  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => DataFrame = {
+  override def apply(modelName: String, modelConfig: Option[Config], searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => DataFrame = {
     val model = ZScore(featureCols, keywords, searchId, utils)
     model.makePrediction
   }

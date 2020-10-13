@@ -1,5 +1,6 @@
 package ot.dispatcher.plugins.small.commands
 
+import com.typesafe.config.Config
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.NumericType
 import ot.dispatcher.plugins.small.algos.fit._
@@ -27,49 +28,56 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
   private val modelName = getPositional("into").getOrElse(List()).headOption
     .getOrElse(algoname + "-" + sq.searchId).stripBackticks()
 
-  def transform(_df: DataFrame): DataFrame = {
-    val nonNumericFeature =_df.schema.find(f => featureCols.contains(f.name) && targetCol!=f.name && !f.dataType.isInstanceOf[NumericType])
+  def transform(df: DataFrame): DataFrame = {
+    val nonNumericFeature =df.schema.find(f => featureCols.contains(f.name) && targetCol!=f.name && !f.dataType.isInstanceOf[NumericType])
     nonNumericFeature.map {x => sendError( s" Feature column '${x.name}' have non numeric type")}
 
-//      val model1 = algoname match{
-//      case "regression" =>
-//        log.debug("Running regression")
-//        LinearRegression(featureCols, targetCol, _df, modelName, sq.searchId)
-//      case "clustering" =>
-//        Clustering(featureCols, _df, getKeywords(), modelName, sq.searchId, utils)
-//      case "classification"|"classifier_logreg" =>
-//        Classification(featureCols, targetCol, _df, modelName, sq.searchId)
-//      case "classification_random_forest"|"classifier_rf"|"class_rf" =>
-//        RandomForestClassifier(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
-//      case "regression_random_forest"|"regressor_rf"|"reg_rf" =>
-//        RandomForestRegresor(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
-//      case "classification_gradient_boosting"|"class_gb"|"class_GradientBoosting"|"classifier_gb" =>
-//        GradientBoostingClassifier(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
-//      case "regression_gradient_boosting"|"reg_gb"|"reg_GradientBoosting"|"regression_gb" =>
-//        GradientBoostingRegressor(featureCols, targetCol, _df, modelName, getKeywords, sq.searchId, utils)
-//    }
+
+    // 1. Get algorithm details reader
+    val configReader: String => Try[String] =
+      getAlgorithmClassName(pluginConfig, "fit")
+
+    // 2. Prepare algorithm config loader
+    val loadAlgorithmConfig: String => Try[Config] =
+      algorithmConfigLoader("baseDir")
+
+    // 3. Get algorithm details by name, or default
+    // 4. Load algorithm config
+    val algorithmDetails: Try[(Option[Config], String)] =
+    configReader(algoname)
+      .orElse(configReader("default"))
+      .flatMap(getAlgorithmDetails)
+      .flatMap { case (algorithmConfigName, algorithmClassName) =>
+        algorithmConfigName
+          .map(loadAlgorithmConfig)
+          .map(_.map(cfg => (Some(cfg), algorithmClassName)))
+          .getOrElse(Success((Option.empty[Config], algorithmClassName)))
+      }
+
 
     val classLoader: ClassLoader = utils.spark.getClass.getClassLoader
 
-    val model: Try[FitModel] = getAlgorithmClassName("fit", algoname)(utils.pluginConfig)
-      .flatMap(getModelInstance[FitModel](classLoader))
-      .orElse(
-        Try(sendError(s" Algorithm with name '$algoname'  is unsupported at this moment"))
-      )
+    val configAndModel: Try[(Option[Config], FitModel)] =
+      algorithmDetails
+        .flatMap { case (cfg, className) =>
+          getModelInstance[FitModel](classLoader)(className)
+            .map(model => (cfg, model))
+        }
 
-    val result = model
-      .map(
-        _.fit(
+    val result = configAndModel
+      .map { case (cfg, model) =>
+        model.fit(
           modelName = modelName,
+          modelConfig = cfg,
           searchId = sq.searchId,
           featureCols = featureCols,
           targetCol = Some(targetCol),
           keywords = getKeywords(),
           utils = utils
         )
-      )
+      }
       .map( algo => {
-        val (pModel, res) = algo(_df)
+        val (pModel, res) = algo(df)
         toCache(pModel, modelName, sq.searchId)
         val serviceCols = res.columns.filter(_.matches("__.*__"))
         res.drop(serviceCols: _*)

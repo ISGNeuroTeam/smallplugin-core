@@ -1,5 +1,6 @@
 package ot.dispatcher.plugins.small.algos.fit
 
+import com.typesafe.config.Config
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.feature.VectorAssembler
 import org.apache.spark.sql.DataFrame
@@ -33,7 +34,7 @@ case class LinearRegression(featureCols: List[String], targetCol: String, dataFr
 }
 
 object LinearRegression extends FitModel {
-  override def fit(modelName: String, searchId: Int, featureCols: List[String], targetCol: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => (PipelineModel, DataFrame) =
+  override def fit(modelName: String, modelConfig: Option[Config], searchId: Int, featureCols: List[String], targetCol: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => (PipelineModel, DataFrame) =
     df => {
       targetCol
         .map(LinearRegression(featureCols, _, df, modelName, searchId))

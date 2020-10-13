@@ -1,9 +1,9 @@
 package ot.dispatcher.plugins.small.algos.evaluate
 
+import com.typesafe.config.Config
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.ml.stat.Summarizer
-import ot.dispatcher.plugins.small.algos.evaluate.EvaluateMetric
 import ot.dispatcher.plugins.small.sdk.ScoreModel
 
 /**
@@ -15,7 +15,7 @@ import ot.dispatcher.plugins.small.sdk.ScoreModel
  * @param featuresNumber - number of features in the model
  * @param searchId - search ID
  */
-case class RegressionScore(labelCol: String, predictionCol: List[String], dataFrame: DataFrame, metricName: String, featuresNumber: Double, searchId: Int) extends EvaluateMetric {
+case class RegressionScore(labelCol: String, predictionCol: List[String], dataFrame: DataFrame, metricName: String, featuresNumber: Double, searchId: Int) {
 
   /**
    * Performs metric calculation
@@ -134,7 +134,7 @@ case class RegressionScore(labelCol: String, predictionCol: List[String], dataFr
 }
 
 object RegressionScore extends ScoreModel {
-  override def score(searchId: Int, labelCol: String, predictionCol: List[String], metricName: String, featuresNumber: Double): DataFrame => DataFrame =
+  override def score(modelName: String, modelConfig: Option[Config], searchId: Int, labelCol: String, predictionCol: List[String], metricName: String, featuresNumber: Double): DataFrame => DataFrame =
     df => {
       val model = RegressionScore(labelCol, predictionCol, df, metricName, featuresNumber, searchId)
 

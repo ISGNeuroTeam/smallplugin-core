@@ -16,7 +16,7 @@ class SmallScoreTest extends CommandTest{
     val thrown = intercept[Exception] {
       execute(commandScore)
     }
-    assert(thrown.getMessage.endsWith("Metric with name 'unknown_metric' is unsupported at this moment"))
+    assert(thrown.getMessage.startsWith("Can not get metric 'unknown_metric' to score."))
   }
 
   test("Test 1. Command: | score mse") {

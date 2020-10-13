@@ -57,7 +57,7 @@ class SmallFitTest extends CommandTest {
     val thrown = intercept[Exception] {
       execute(commandFit)
     }
-    assert(thrown.getMessage.endsWith("Algorithm with name 'unknown_algo'  is unsupported at this moment"))
+    assert(thrown.getMessage.startsWith("Can not get 'unknown_algo' to fit."))
   }
 
   test("Test 1.1 Command: | fit unknown_algo") {

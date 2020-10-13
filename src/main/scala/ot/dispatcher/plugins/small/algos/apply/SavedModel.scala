@@ -1,7 +1,9 @@
 package ot.dispatcher.plugins.small.algos.apply
 
+import com.typesafe.config.Config
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.col
+import ot.dispatcher.plugins.small.sdk.ApplyModel
 import ot.dispatcher.plugins.small.utils.SmallModelsUtils
 import ot.dispatcher.sdk.PluginUtils
 
@@ -27,4 +29,9 @@ case class SavedModel(modelName: String, id: Int, utils: PluginUtils) extends Sm
       case None => fdf
     }
   }
+}
+
+object SavedModel extends ApplyModel {
+  override def apply(modelName: String, modelConfig: Option[Config], searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => DataFrame =
+    SavedModel(modelName, searchId, utils).makePrediction
 }

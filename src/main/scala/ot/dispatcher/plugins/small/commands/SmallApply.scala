@@ -1,5 +1,6 @@
 package ot.dispatcher.plugins.small.commands
 
+import com.typesafe.config.Config
 import org.apache.spark.sql.DataFrame
 import ot.dispatcher.plugins.small.algos.apply.{Anomaly, IQR, LocalOutlierFactor, MAD, Predict, SavedModel, ZScore}
 import ot.dispatcher.plugins.small.sdk.ApplyModel
@@ -22,39 +23,52 @@ class SmallApply(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
       .map(_.stripBackticks())
 
 
-  def transform(_df: DataFrame): DataFrame = {
-//    val algo = algoname match {
-//      case "predict" => Predict(getTargetName(), getKeywords(), sq.searchId, utils)
-//      case "anomaly" => Anomaly(getTargetName(), getKeywords(), sq.searchId, utils)
-//      case "lof" => LocalOutlierFactor(featureCols, getKeywords(), sq.searchId, utils)
-//      case "iqr" => IQR(featureCols, getKeywords(), sq.searchId, utils)
-//      case "zscore" => ZScore(featureCols, getKeywords(), sq.searchId, utils)
-//      case "mad" => MAD(featureCols, getKeywords(), sq.searchId, utils)
+  def transform(df: DataFrame): DataFrame = {
 
-//      case _ => SavedModel(algoname, sq.searchId, utils)
-//    }
+    // 1. Get algorithm details reader
+    val configReader: String => Try[String] =
+      getAlgorithmClassName(pluginConfig, "apply")
+
+    // 2. Prepare algorithm config loader
+    val loadAlgorithmConfig: String => Try[Config] =
+      algorithmConfigLoader("baseDir")
+
+    // 3. Get algorithm details by name, or default
+    // 4. Load algorithm config
+    val algorithmDetails: Try[(Option[Config], String)] =
+      configReader(algoname)
+        .orElse(configReader("default"))
+        .flatMap(getAlgorithmDetails)
+        .flatMap { case (algorithmConfigName, algorithmClassName) =>
+          algorithmConfigName
+            .map(loadAlgorithmConfig)
+            .map(_.map(cfg => (Some(cfg), algorithmClassName)))
+            .getOrElse(Success((Option.empty[Config], algorithmClassName)))
+        }
+
 
     val classLoader = utils.spark.getClass.getClassLoader
 
-    val transformer: Try[DataFrame => DataFrame] = getAlgorithmClassName("apply", algoname)(pluginConfig)
-      .flatMap(getModelInstance[ApplyModel](classLoader))
-      .map( model =>
-        model.apply(
-          searchId = sq.searchId,
-          featureCols = featureCols,
-          targetName = targetName,
-          keywords = getKeywords(),
-          utils = utils
-        )
-      )
-      .orElse(
-        Try(
-          SavedModel(algoname, sq.searchId, utils).makePrediction
-        )
-      )
+    val transformer: Try[DataFrame => DataFrame] =
+      algorithmDetails
+        .flatMap { case (cfg, className) =>
+          getModelInstance[ApplyModel](classLoader)(className)
+            .map(model => (cfg, model))
+        }
+        .map { case (cfg, model) =>
+          model.apply(
+            modelName = algoname,
+            modelConfig = cfg,
+            searchId = sq.searchId,
+            featureCols = featureCols,
+            targetName = targetName,
+            keywords = getKeywords(),
+            utils = utils
+          )
+        }
 
     val result = transformer
-      .map(_(_df))
+      .map(_(df))
       .map(res => {
         val serviceCols =  res.columns.filter(_.matches("__.*__"))
         res.drop(serviceCols : _*)

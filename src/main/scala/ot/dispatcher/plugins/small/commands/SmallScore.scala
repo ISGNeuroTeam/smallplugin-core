@@ -1,5 +1,6 @@
 package ot.dispatcher.plugins.small.commands
 
+import com.typesafe.config.Config
 import org.apache.spark.sql.DataFrame
 import ot.dispatcher.plugins.small.algos.evaluate.RegressionScore
 import ot.dispatcher.plugins.small.sdk.ScoreModel
@@ -47,57 +48,56 @@ class SmallScore(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
 
   /**
    * Make transform to given dataframe
-   * @param _df - given dataframe
+   * @param df - given dataframe
    * @return dataframe with the name of the metric and its value
    */
-  def transform(_df: DataFrame): DataFrame = {
-//    val scoreAlgorithm = metricName match{
-//      case "mse" =>
-//        log.debug("Running MSE scoring")
-//        RegressionScore(labelCol, predictionCol, _df, "mse", featuresNumber, sq.searchId)
-//      case "rmse" =>
-//        log.debug("Running RMSE scoring")
-//        RegressionScore(labelCol, predictionCol, _df, "rmse", featuresNumber, sq.searchId)
-//      case "mae" =>
-//        log.debug("Running MAE scoring")
-//        RegressionScore(labelCol, predictionCol, _df, "mae", featuresNumber, sq.searchId)
-//      case "mape" =>
-//        log.debug("Running MAPE scoring")
-//        RegressionScore(labelCol, predictionCol, _df, "mape", featuresNumber, sq.searchId)
-//      case "smape" =>
-//        log.debug("Runnign SMAPE scoring")
-//        RegressionScore(labelCol, predictionCol, _df, "smape", featuresNumber, sq.searchId)
-//      case "r2" =>
-//        log.debug("Running R2 scoring")
-//        RegressionScore(labelCol, predictionCol, _df, "r2", featuresNumber,  sq.searchId)
-//      case "r2_adj" =>
-//        log.debug("Running R2_adj scoring")
-//        RegressionScore(labelCol, predictionCol, _df, "r2_adj", featuresNumber, sq.searchId)
-//      case x => sendError(s" Metric with name '$x' is unsupported at this moment")
-//    }
+  def transform(df: DataFrame): DataFrame = {
+
+    // 1. Get algorithm details reader
+    val configReader: String => Try[String] =
+      getAlgorithmClassName(pluginConfig, "score")
+
+    // 2. Prepare algorithm config loader
+    val loadAlgorithmConfig: String => Try[Config] =
+      algorithmConfigLoader("baseDir")
+
+    // 3. Get algorithm details by name, or default
+    // 4. Load algorithm config
+    val algorithmDetails: Try[(Option[Config], String)] =
+    configReader(metricName)
+      .orElse(configReader("default"))
+      .flatMap(getAlgorithmDetails)
+      .flatMap { case (algorithmConfigName, algorithmClassName) =>
+        algorithmConfigName
+          .map(loadAlgorithmConfig)
+          .map(_.map(cfg => (Some(cfg), algorithmClassName)))
+          .getOrElse(Success((Option.empty[Config], algorithmClassName)))
+      }
+
 
     val classLoader = utils.spark.getClass.getClassLoader
 
-    val model = getAlgorithmClassName("score", metricName)(utils.pluginConfig)
-      .flatMap(getModelInstance[ScoreModel](classLoader))
-      .orElse(
-        Try(
-          sendError(s" Metric with name '$metricName' is unsupported at this moment")
-        )
-      )
+    val configAndModel: Try[(Option[Config], ScoreModel)] =  algorithmDetails
+      .flatMap { case (cfg, className) =>
+        getModelInstance[ScoreModel](classLoader)(className)
+          .map(model => (cfg, model))
+      }
 
-    val result = model
-      .map(
-        _.score(
+
+    val result = configAndModel
+      .map { case (cfg, model) =>
+        model.score(
+          modelName = metricName,
+          modelConfig = cfg,
           searchId = sq.searchId,
           labelCol = labelCol,
           predictionCol = predictionCol,
           metricName = metricName,
           featuresNumber = featuresNumber
         )
-      )
+      }
       .map(algo => {
-        val res = algo(_df)
+        val res = algo(df)
         val serviceCols =  res.columns.filter(_.matches("__.*__"))
         res.show()
         res.drop(serviceCols : _*)

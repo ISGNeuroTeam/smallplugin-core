@@ -1,5 +1,6 @@
 package ot.dispatcher.plugins.small.algos.fit
 
+import com.typesafe.config.Config
 import org.apache.spark.ml.classification.GBTClassifier
 import org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorAssembler, VectorIndexer}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
@@ -145,7 +146,7 @@ case class GradientBoostingClassifier(featureCols: List[String], targetCol: Stri
 }
 
 object GradientBoostingClassifier extends FitModel {
-  override def fit(modelName: String, searchId: Int, featureCols: List[String], targetCol: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => (PipelineModel, DataFrame) =
+  override def fit(modelName: String, modelConfig: Option[Config], searchId: Int, featureCols: List[String], targetCol: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => (PipelineModel, DataFrame) =
     df => {
       val model = targetCol
         .map(GradientBoostingClassifier(featureCols, _, df, modelName, keywords, searchId, utils))

@@ -1,4 +1,5 @@
 package ot.dispatcher.plugins.small.algos.apply
+import com.typesafe.config.Config
 import org.apache.spark.sql.DataFrame
 import ot.dispatcher.plugins.small.sdk.ApplyModel
 import ot.dispatcher.sdk.PluginUtils
@@ -36,7 +37,7 @@ case class Anomaly(targetCol: String, keywords: Map[String, String], id: Int, ut
 }
 
 object Anomaly extends ApplyModel {
-  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => DataFrame = {
+  override def apply(modelName: String, modelConfig: Option[Config], searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => DataFrame = {
     val anomalyModel = targetName
       .map(Anomaly(_, keywords, searchId, utils))
       .getOrElse(utils.sendError(searchId, "Value column name is not specified"))

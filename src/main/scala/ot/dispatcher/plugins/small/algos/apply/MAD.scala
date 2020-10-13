@@ -1,5 +1,6 @@
 package ot.dispatcher.plugins.small.algos.apply
 
+import com.typesafe.config.Config
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.{Column, DataFrame}
 import ot.dispatcher.sdk.PluginUtils
@@ -33,7 +34,7 @@ case class MAD(fieldsUsed: List[String], properties:Map[String, String], searchI
 }
 
 object MAD extends ApplyModel {
-  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => DataFrame = {
+  override def apply(modelName: String, modelConfig: Option[Config], searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame => DataFrame = {
     val model = MAD(featureCols, keywords, searchId, utils)
     model.makePrediction
   }

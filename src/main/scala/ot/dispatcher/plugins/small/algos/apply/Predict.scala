@@ -1,5 +1,6 @@
 package ot.dispatcher.plugins.small.algos.apply
 
+import com.typesafe.config.Config
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.max
 import ot.dispatcher.plugins.small.algos.fit.LinearRegression
@@ -42,7 +43,7 @@ case class Predict(targetCol: String, keywords: Map[String, String], id: Int, ut
 }
 
 object Predict extends ApplyModel {
-  override def apply(searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame =>DataFrame = {
+  override def apply(modelName: String, modelConfig: Option[Config], searchId: Int, featureCols: List[String], targetName: Option[String], keywords: Map[String, String], utils: PluginUtils): DataFrame =>DataFrame = {
     val predictModel = targetName
       .map(Predict(_, keywords, searchId, utils))
       .getOrElse(utils.sendError(searchId, "Value column name is not specified"))
