@@ -27,18 +27,18 @@ class SmallApply(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
 
     // 1. Get algorithm details reader
     val configReader: String => Try[String] =
-      getAlgorithmClassName(pluginConfig, "apply")
+      getAlgorithmParameters(pluginConfig, "apply")
 
     // 2. Prepare algorithm config loader
     val loadAlgorithmConfig: String => Try[Config] =
-      algorithmConfigLoader("baseDir")
+      algorithmConfigLoader(pluginConfig)
 
     // 3. Get algorithm details by name, or default
     // 4. Load algorithm config
     val algorithmDetails: Try[(Option[Config], String)] =
       configReader(algoname)
         .orElse(configReader("default"))
-        .flatMap(getAlgorithmDetails)
+        .flatMap(parseAlgorithmParameters)
         .flatMap { case (algorithmConfigName, algorithmClassName) =>
           algorithmConfigName
             .map(loadAlgorithmConfig)

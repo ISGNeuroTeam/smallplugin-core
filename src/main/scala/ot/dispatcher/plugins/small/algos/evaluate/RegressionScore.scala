@@ -134,9 +134,9 @@ case class RegressionScore(labelCol: String, predictionCol: List[String], dataFr
 }
 
 object RegressionScore extends ScoreModel {
-  override def score(modelName: String, modelConfig: Option[Config], searchId: Int, labelCol: String, predictionCol: List[String], metricName: String, featuresNumber: Double): DataFrame => DataFrame =
+  override def score(modelName: String, modelConfig: Option[Config], searchId: Int, labelCol: String, predictionCol: List[String], featuresNumber: Double): DataFrame => DataFrame =
     df => {
-      val model = RegressionScore(labelCol, predictionCol, df, metricName, featuresNumber, searchId)
+      val model = RegressionScore(labelCol, predictionCol, df, modelName, featuresNumber, searchId)
 
       model.makeEvaluate()
     }

@@ -4,6 +4,8 @@ mlmodels {
 }
 loglevel = "/opt/otp/Dispatcher/plugins/smallPlugin/loglevel.properties"
 
+configBasePath = "/base/path"
+
 fit {
     regression = "ot.dispatcher.plugins.small.algos.fit.LinearRegression"
     clustering = "ot.dispatcher.plugins.small.algos.fit.Clustering"
