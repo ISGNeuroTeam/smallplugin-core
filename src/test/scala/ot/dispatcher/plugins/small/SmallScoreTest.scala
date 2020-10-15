@@ -25,7 +25,7 @@ class SmallScoreTest extends CommandTest{
     val actual = execute(commandScore)
     val expected =
       """[
-        |{"mse": 0.18500000000000005}
+        |{"MSE": 0.18500000000000005}
         |]""".stripMargin
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
   }
@@ -36,7 +36,7 @@ class SmallScoreTest extends CommandTest{
     val actual = execute(commandScore)
     val expected =
       """[
-        |{"rmse": 0.4301162633521314}
+        |{"RMSE": 0.4301162633521314}
         |]""".stripMargin
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
   }
@@ -47,7 +47,7 @@ class SmallScoreTest extends CommandTest{
     val actual = execute(commandScore)
     val expected =
       """[
-        |{"mae": 0.3500000000000001}
+        |{"MAE": 0.3500000000000001}
         |]""".stripMargin
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
   }
@@ -58,7 +58,7 @@ class SmallScoreTest extends CommandTest{
     val actual = execute(commandScore)
     val expected =
       """[
-        |{"mape": 0.14631578947368426}
+        |{"MAPE": 0.14631578947368426}
         |]""".stripMargin
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
   }
@@ -69,7 +69,7 @@ class SmallScoreTest extends CommandTest{
     val actual = execute(commandScore)
     val expected =
       """[
-        |{"smape": 13.278388278388285}
+        |{"SMAPE": 13.278388278388285}
         |]""".stripMargin
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
   }
@@ -80,18 +80,18 @@ class SmallScoreTest extends CommandTest{
     val actual = execute(commandScore)
     val expected =
       """[
-        |{"r2": -1.0555555555555558}
+        |{"R2": -1.0555555555555558}
         |]""".stripMargin
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
   }
 
   test("Test1.6. Command: | score r2adj") {
-    val queryScore = SimpleQuery("""score r2_adj a vs b with 5""")
+    val queryScore = SimpleQuery("""score r2_adj a vs b featuresNumber=5""")
     val commandScore = new SmallScore(queryScore, utils)
     val actual = execute(commandScore)
     val expected =
       """[
-        |{"r2_adj": 1.6851851851851851}
+        |{"R2Adj": 1.6851851851851851}
         |]""".stripMargin
     assert(jsonCompare(actual, expected), f"Result : $actual\n---\nExpected : $expected")
   }
@@ -126,7 +126,25 @@ class SmallScoreTest extends CommandTest{
     val thrown = intercept[Exception] {
       val commandScore = new SmallScore(queryScore, utils)
     }
-    assert(thrown.getMessage.endsWith("Syntax error, the preposition 'vs' is required between label and predictions columns"))
+    assert(thrown.getMessage.endsWith("Prediction column name is not specified"))
+  }
+
+  test("Test 5.1 Command: | score R2Adj without featuresNumber") {
+    val queryScore = SimpleQuery("""score r2_adj a vs b wrongkey=10""")
+    val thrown = intercept[Exception] {
+      val commandScore = new SmallScore(queryScore, utils)
+      execute(commandScore)
+    }
+    assert(thrown.getMessage.endsWith("Number of features is not specified"))
+  }
+
+  test("Test 5.2 Command: | score R2Adj with non-integer featuresNumber") {
+    val queryScore = SimpleQuery("""score r2_adj a vs b featuresNumber=wrong""")
+    val thrown = intercept[Exception] {
+      val commandScore = new SmallScore(queryScore, utils)
+      execute(commandScore)
+    }
+    assert(thrown.getMessage.endsWith("Number of features must be integer"))
   }
 
 }
