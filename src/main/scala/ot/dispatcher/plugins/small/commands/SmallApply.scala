@@ -2,7 +2,6 @@ package ot.dispatcher.plugins.small.commands
 
 import com.typesafe.config.Config
 import org.apache.spark.sql.DataFrame
-import ot.dispatcher.plugins.small.algos.apply.{Anomaly, IQR, LocalOutlierFactor, MAD, Predict, SavedModel, ZScore}
 import ot.dispatcher.plugins.small.sdk.ApplyModel
 import ot.dispatcher.sdk.{PluginCommand, PluginUtils}
 import ot.dispatcher.sdk.core.SimpleQuery

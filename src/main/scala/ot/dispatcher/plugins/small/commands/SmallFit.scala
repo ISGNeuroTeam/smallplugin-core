@@ -3,7 +3,6 @@ package ot.dispatcher.plugins.small.commands
 import com.typesafe.config.Config
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.NumericType
-import ot.dispatcher.plugins.small.algos.fit._
 import ot.dispatcher.plugins.small.sdk.FitModel
 import ot.dispatcher.plugins.small.utils.SmallModelsUtils
 import ot.dispatcher.sdk.core.SimpleQuery
