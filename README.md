@@ -19,6 +19,14 @@ sbt test
 
 ## Configuration
 
+Configuration section `mlmodels` defines the file system type and path where models should be stored.
+```hocon
+mlmodels {
+  fs = "file:/"
+  path = "///mnt/glfs/mlmodels/"
+}
+``` 
+
 Commands _apply_, _score_, _fit_ can be individually extended in corresponded sections of plugin.conf.
 Each of command section should contain key as the extension's public name that be used to refer it in the query.
 Special key name of `default` is used to specify default implementation of the command.
