@@ -4,19 +4,14 @@ mlmodels {
 }
 loglevel = "/opt/otp/Dispatcher/plugins/smallPlugin/loglevel.properties"
 
-configBasePath = "/base/path"
+configBasePath = "/mnt/glfs/mlmodels/conf"
 
 fit {
-    regression = "ot.dispatcher.plugins.small.algos.fit.LinearRegression"
-    clustering = "ot.dispatcher.plugins.small.algos.fit.Clustering"
 
-    classification = "ot.dispatcher.plugins.small.algos.fit.Classification"
-    classifier_logreg = "ot.dispatcher.plugins.small.algos.fit.Classification"
 }
 
 score {
-    mse = "ot.dispatcher.plugins.small.algos.evaluate.RegressionScore"
-    rmse = "ot.dispatcher.plugins.small.algos.evaluate.RegressionScore"
+
 }
 
 apply {
