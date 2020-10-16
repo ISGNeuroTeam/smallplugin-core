@@ -1,0 +1,20 @@
+mlmodels {
+  fs = "file:/"
+  path = "///mnt/glfs/mlmodels/"
+}
+loglevel = "/opt/otp/Dispatcher/plugins/smallPlugin/loglevel.properties"
+
+configBasePath = "/mnt/glfs/mlmodels/conf"
+
+fit {
+
+}
+
+score {
+
+}
+
+apply {
+
+    default = "ot.dispatcher.plugins.small.algos.apply.SavedModel"
+}
