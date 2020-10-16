@@ -15,7 +15,6 @@ score {
 }
 
 apply {
-    predict = "ot.dispatcher.plugins.small.algos.apply.Predict"
-    anomaly = "ot.dispatcher.plugins.small.algos.apply.Anomaly"
 
+    default = "ot.dispatcher.plugins.small.algos.apply.SavedModel"
 }
