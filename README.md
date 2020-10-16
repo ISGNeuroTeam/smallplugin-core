@@ -72,9 +72,6 @@ All the extensions jar-files is considered as an external dependencies and shoul
 
 * [SBT](https://www.scala-sbt.org) - Build tool for Scala and Java projects
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 
