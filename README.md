@@ -7,7 +7,7 @@ Extendable commands for using machine learning functions in **Dispatcher App**.
 ### Prerequisites
 
 This package is require the SBT, and the JDK 8 installed.
-It also required the `dispatcher-sdk` module published locally.
+It also required that the `dispatcher-sdk` and `smallplugin-sdk` modules should be published locally using the `publishLocal` SBT's command.
 
 
 ### Command List
