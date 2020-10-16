@@ -56,7 +56,7 @@ The _apply_ section also contains default command implementation via "ot.dispatc
 Next section _fit_ contains two cases of Linear Regression model. 
 Both cases implemented via "com.example.small.ext.LinearRegression" class but have different configuration files attached.
 Both cases use the `lin.conf` configuration file attached but in case of the `linreg` the file should be located in the `/some/root/prod` directory.
-In the case of `linreg_t` the configuration file should be located in the `/some/root/test/` directory.
+In the case of `linreg_t` the configuration file should be located in the `/some/root/test` directory.
 
 ## Deployment
 
