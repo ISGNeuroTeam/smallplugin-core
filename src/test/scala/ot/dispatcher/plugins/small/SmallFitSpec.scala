@@ -3,12 +3,11 @@ package ot.dispatcher.plugins.small
 import scala.concurrent.{Await, ExecutionContext, Future, Promise}
 import scala.concurrent.duration._
 import scala.reflect.io.Path
-import scala.util.{Failure, Success, Try}
-
-import com.typesafe.config.{Config, ConfigFactory}
+import scala.util.{Failure, Random, Success, Try}
+import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
+import org.apache.log4j.Logger
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.scalatest.{BeforeAndAfterAll, Matchers, Outcome, fixture}
-
 import ot.dispatcher.plugins.small.commands.SmallFit
 import ot.dispatcher.sdk.PluginUtils
 import ot.dispatcher.sdk.core.SimpleQuery
@@ -27,8 +26,41 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
       .master("local")
       .getOrCreate()
 
-  private lazy val utils: PluginUtils =
+  private lazy implicit val utils: PluginUtils =
     new MockPluginUtils(sparkSession)
+
+  private def alterPluginConfig(patch: Config => Config): PluginUtils => PluginUtils =
+    pu => new PluginUtils {
+      override def getLoggerFor(classname: String): Logger =
+        pu.getLoggerFor(classname)
+
+      override def logLevelOf(name: String): String =
+        pu.logLevelOf(name)
+
+      override def printDfHeadToLog(log: Logger, id: Int, df: DataFrame): Unit =
+        pu.printDfHeadToLog(log, id, df)
+
+      override def sendError(id: Int, message: String): Nothing =
+        pu.sendError(id, message)
+
+      override def spark: SparkSession =
+        pu.spark
+
+      override def executeQuery(query: String, df: DataFrame): DataFrame =
+        pu.executeQuery(query, df)
+
+      override def executeQuery(query: String, index: String, startTime: Int, finishTime: Int): DataFrame =
+        pu.executeQuery(query, index, startTime, finishTime)
+
+      private val patchedPluginConfig: Config =
+        patch(pu.pluginConfig)
+
+      override def pluginConfig: Config =
+        patchedPluginConfig
+
+      override def mainConfig: Config =
+        pu.mainConfig
+    }
 
   private def deleteConfiguredDirectory(config: Config)(section: String): Unit =
     Try(config.getString(section)).map(Path(_)) match {
@@ -69,7 +101,7 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
     sparkSession.emptyDataFrame
 
   implicit class QueryRunner(query: SimpleQuery) {
-    def run(df: DataFrame): DataFrame =
+    def run(df: DataFrame)(implicit utils: PluginUtils): DataFrame =
       new SmallFit(query, utils)
         .transform(df)
   }
@@ -79,11 +111,16 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
 
   "The fit command" should "invoke a model implementation as defined in the `plugin.conf`." in { f =>
     val model: String = "dummy"
-    val query: SimpleQuery = SimpleQuery(s"$model target from a b c")
+    val searchId: Int = Random.nextInt()
+    val query: SimpleQuery = SimpleQuery(s"$model target from a b c", searchId)
 
     query.run(train)
 
     f.parameters.isCompleted shouldBe true
+
+    val parameters = Await.result(f.parameters, 1 second)
+
+    parameters.modelName shouldBe s"$model-${query.searchId}"
   }
 
 
@@ -295,6 +332,49 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
     val parameters = Await.result(f.parameters, 1 second)
 
     parameters.keywords shouldBe keywords
+  }
+
+  it should "invoke the default model implementation when the requested model is not defined in the config `plugin.conf`." in { f =>
+    val model: String = "none"
+    val searchId: Int = Random.nextInt()
+    val query: SimpleQuery = SimpleQuery(s"$model target from a b c", searchId)
+
+    val addDefault: Config => Config =
+      cfg =>
+        cfg.withValue(
+          "fit.default",
+          ConfigValueFactory.fromAnyRef(cfg.getString("fit.dummy"))
+        )
+
+    val alteredUtils: PluginUtils = alterPluginConfig(addDefault)(utils)
+
+    query.run(train)(alteredUtils)
+
+    val parameters = Await.result(f.parameters, 1 second)
+
+    parameters.modelName shouldBe s"$model-${query.searchId}"
+  }
+
+  it should "invoke the default model implementation with provided model's alias name when the requested model is not defined in the config `plugin.conf`." in { f =>
+    val model: String = "none"
+    val alias: String = "unbelievable"
+    val searchId: Int = Random.nextInt()
+    val query: SimpleQuery = SimpleQuery(s"$model target from a b c into $alias", searchId)
+
+    val addDefault: Config => Config =
+      cfg =>
+        cfg.withValue(
+          "fit.default",
+          ConfigValueFactory.fromAnyRef(cfg.getString("fit.dummy"))
+        )
+
+    val alteredUtils: PluginUtils = alterPluginConfig(addDefault)(utils)
+
+    query.run(train)(alteredUtils)
+
+    val parameters = Await.result(f.parameters, 1 second)
+
+    parameters.modelName shouldBe alias
   }
 
 }
