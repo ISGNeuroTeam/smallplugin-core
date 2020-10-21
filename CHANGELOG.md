@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Test for the _fit_ command.
 - Test for the _apply_ command.
+- Test for the _score_ command.
 
 ## [2.1.0] - 2020-10-16
 ### Changed
