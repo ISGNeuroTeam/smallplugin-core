@@ -230,7 +230,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
     result.columns.exists(predicate) shouldBe false
   }
 
-  it should "invoke the default model implementation when the provided model not defined in config `plugin.conf`." in { f =>
+  it should "invoke the default model implementation when the requested model is not defined in the config `plugin.conf`." in { f =>
     val model: String = "none"
     val query: SimpleQuery = SimpleQuery(s"score $model a vs b")
 
