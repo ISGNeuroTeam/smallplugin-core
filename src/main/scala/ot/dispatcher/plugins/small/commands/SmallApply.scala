@@ -71,7 +71,6 @@ class SmallApply(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
       .map(res => {
         val serviceCols =  res.columns.filter(_.matches("__.*__"))
         res.drop(serviceCols : _*)
-        res
       })
 
     result match {

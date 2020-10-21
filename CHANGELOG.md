@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Algorithm specific configuration load failure now throws an error instead of silently creation of empty config.
 - The _fit_ command query with an empty target column provides `None` to a model implementation instead of `Some(null)`.
+- The service columns (it is starts and ends with double underscore character) drop from the resulting data frame of the _apply_'s command.
 ### Added
 - Test for the _fit_ command.
+- Test for the _apply_ command.
 
 ## [2.1.0] - 2020-10-16
 ### Changed
