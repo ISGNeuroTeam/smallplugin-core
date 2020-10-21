@@ -143,13 +143,37 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
   }
 
 
-  it should "cache a fitted model with the provided name in the temporary storage defined in the `application.conf`." in { f=>
+  it should "cache a fitted model with the provided alias name in the temporary storage defined in the `application.conf`." in { f=>
     val model: String = "dummy"
-    val query: SimpleQuery = SimpleQuery(s"$model target from a b c")
+    val alias: String = "surprise"
+    val query: SimpleQuery = SimpleQuery(s"$model target from a b c into $alias")
 
     query.run(train)
 
     val parameters = Await.result(f.parameters, 1 second)
+
+    parameters.modelName shouldBe alias
+
+    val modelPath: Path =
+      Path(utils.mainConfig.getString("memcache.path"))
+        .resolve(s"search_${parameters.searchId}.cache")
+        .resolve(parameters.modelName)
+
+    modelPath.exists shouldBe true
+    modelPath.isDirectory shouldBe true
+  }
+
+
+  it should "cache a fitted model with the model name in the temporary storage defined in the `application.conf`." in { f=>
+    val model: String = "dummy"
+    val searchId: Int = scala.util.Random.nextInt()
+    val query: SimpleQuery = SimpleQuery(s"$model target from a b c", searchId)
+
+    query.run(train)
+
+    val parameters = Await.result(f.parameters, 1 second)
+
+    parameters.searchId shouldBe query.searchId
 
     val modelPath: Path =
       Path(utils.mainConfig.getString("memcache.path"))
@@ -191,6 +215,18 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
   }
 
 
+  it should "pass the provided alias name as the model name to a model implementation." in { f =>
+    val model: String = "dummy"
+    val alias: String = "modelX"
+    val query: SimpleQuery = SimpleQuery(s"$model target from a b c into $alias")
+    query.run(train)
+
+    val parameters = Await.result(f.parameters, 1 second)
+
+    parameters.modelName shouldBe alias
+  }
+
+
   it should "pass the name of target column to a model implementation." in { f=>
     val model: String = "dummy"
     val targetCol: Option[String] = Some("secretCol")
@@ -217,7 +253,8 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
 
   it should "pass the search identifier to a model implementation." in { f=>
     val model: String = "dummy"
-    val query: SimpleQuery = SimpleQuery(s"$model target from a b c")
+    val searchId: Int = scala.util.Random.nextInt()
+    val query: SimpleQuery = SimpleQuery(s"$model target from a b c", searchId)
     query.run(train)
 
     val parameters = Await.result(f.parameters, 1 second)
