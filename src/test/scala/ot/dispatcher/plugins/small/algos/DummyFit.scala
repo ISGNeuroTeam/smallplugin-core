@@ -6,14 +6,14 @@ import org.apache.spark.ml.{Pipeline, PipelineModel, Transformer}
 import org.apache.spark.ml.feature.SQLTransformer
 import org.apache.spark.sql.DataFrame
 
-import ot.dispatcher.plugins.small.{SmallFitSpec, SmallFitTest}
+import ot.dispatcher.plugins.small.SmallFitSpec
 import ot.dispatcher.plugins.small.sdk.FitModel
 import ot.dispatcher.sdk.PluginUtils
 
 
 object DummyFit extends FitModel {
 
-  import ot.dispatcher.plugins.small.SmallFitSpec.{FitParameters, parametersToComplete}
+  import SmallFitSpec.{FitParameters, parametersToComplete}
 
 
   override def fit(modelName: String, modelConfig: Option[Config], searchId: Int, featureCols: List[String],

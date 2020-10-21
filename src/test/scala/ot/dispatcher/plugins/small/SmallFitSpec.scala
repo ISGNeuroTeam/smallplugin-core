@@ -113,7 +113,11 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
 
     query.run(train)
 
-    val expected: Config = ConfigFactory.parseResources("conf/fit.conf")
+    val configBasePath: Path = Path(utils.pluginConfig.getString("configBasePath"))
+        .resolve("conf/fit.conf")
+
+    val expected: Config = ConfigFactory
+      .parseURL(configBasePath.toURL)
 
     val parameters = Await.result(f.parameters, 1 second)
 
