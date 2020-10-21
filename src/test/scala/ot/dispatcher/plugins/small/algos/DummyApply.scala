@@ -19,13 +19,13 @@ object DummyApply extends ApplyModel {
 
       parametersToComplete.success(
         ApplyParameters(
-          modelName: String,
-          modelConfig: Option[Config],
-          searchId: Int,
-          featureCols: List[String],
-          targetName: Option[String],
-          keywords: Map[String, String],
-          utils: PluginUtils
+          modelName = modelName,
+          modelConfig = modelConfig,
+          searchId = searchId,
+          featureCols = featureCols,
+          targetName = targetName,
+          keywords = keywords,
+          utils = utils
         )
       )
 
