@@ -5,8 +5,7 @@ import java.nio.file.Paths
 
 import scala.reflect.runtime.universe
 import scala.util.{Failure, Success, Try}
-
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.{Config, ConfigFactory, ConfigParseOptions}
 
 package object commands {
 
@@ -40,13 +39,17 @@ package object commands {
       val configBasePath =
         config.getString("configBasePath")
 
-      ConfigFactory.parseURL(
-        Paths
-          .get(configBasePath)
-          .resolve(configFileName)
-          .toUri
-          .toURL
-      )
+      val url = Paths
+        .get(configBasePath)
+        .resolve(configFileName)
+        .toUri
+        .toURL
+
+      val options = ConfigParseOptions
+        .defaults()
+        .setAllowMissing(false)
+
+      ConfigFactory.parseURL(url, options)
     }
 
   private[commands] def getModelInstance[A](classLoader: ClassLoader): String => Try[A] =

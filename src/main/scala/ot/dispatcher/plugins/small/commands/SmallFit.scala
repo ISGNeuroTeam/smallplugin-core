@@ -22,7 +22,7 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
     case h::Nil if supervisedAlgos.contains(h) => sendError("Target column name is not specified")
     case h::Nil => (h, null)
     case h0::h1::Nil => (h0, h1)
-    case _::_::t =>  sendError(s"Sintax error, unknown args: ${t.mkString(", ", "[", "]")}")
+    case _::_::t =>  sendError(s"Syntax error, unknown args: ${t.mkString(", ", "[", "]")}")
   }
   private val modelName = getPositional("into").getOrElse(List()).headOption
     .getOrElse(algoname + "-" + sq.searchId).stripBackticks()
@@ -70,7 +70,7 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
           modelConfig = cfg,
           searchId = sq.searchId,
           featureCols = featureCols,
-          targetCol = Some(targetCol),
+          targetCol = Option(targetCol),
           keywords = getKeywords(),
           utils = utils
         )
