@@ -69,7 +69,5 @@ clean:
 
 test:
 	# required section
-	echo "Tests are broken"
-	true
-	#echo "Testing..."
-	#sbt test
+	echo "Testing..."
+	sbt test

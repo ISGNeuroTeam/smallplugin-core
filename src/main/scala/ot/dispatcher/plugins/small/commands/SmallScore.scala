@@ -85,7 +85,6 @@ class SmallScore(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
       .map(algo => {
         val res = algo(df)
         val serviceCols =  res.columns.filter(_.matches("__.*__"))
-        res.show()
         res.drop(serviceCols : _*)
       })
 
