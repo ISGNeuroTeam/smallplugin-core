@@ -54,7 +54,7 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
       }
 
 
-    val classLoader: ClassLoader = utils.spark.getClass.getClassLoader
+    val classLoader: ClassLoader = Thread.currentThread().getContextClassLoader
 
     val configAndModel: Try[(Option[Config], FitModel)] =
       algorithmDetails

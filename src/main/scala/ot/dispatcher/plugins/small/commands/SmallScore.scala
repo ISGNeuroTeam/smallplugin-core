@@ -61,7 +61,7 @@ class SmallScore(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
       }
 
 
-    val classLoader = utils.spark.getClass.getClassLoader
+    val classLoader = Thread.currentThread().getContextClassLoader
 
     val configAndModel: Try[(Option[Config], ScoreModel)] =  algorithmDetails
       .flatMap { case (cfg, className) =>
