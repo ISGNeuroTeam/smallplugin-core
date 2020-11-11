@@ -46,7 +46,7 @@ class SmallApply(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
         }
 
 
-    val classLoader = utils.spark.getClass.getClassLoader
+    val classLoader = Thread.currentThread().getContextClassLoader
 
     val transformer: Try[DataFrame => DataFrame] =
       algorithmDetails
