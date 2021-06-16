@@ -5,6 +5,8 @@ import java.nio.file.Paths
 import org.apache.spark.ml.{Pipeline, PipelineModel, Transformer}
 import org.apache.spark.sql.DataFrame
 import ot.dispatcher.sdk.PluginUtils
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types._
 
 import scala.util.{Failure, Success, Try}
 
@@ -44,5 +46,23 @@ class SmallModelsUtils(pluginUtils: PluginUtils){
   def loadExisting(name: String, searchId: Long) = Try(fromCache(name, searchId)) match {
     case Success(m) => m
     case Failure(_) => load(name)
+  }
+
+  def fixMissing(df: DataFrame, featureCols: List[String], targetCol: String): DataFrame = {
+
+    val getConf = config.getString("missing")
+    println(s"filling strategy: $getConf")
+    val allCols = targetCol::featureCols
+
+    val resultDf = getConf match {
+      case "skip" => {
+        df.na.replace(allCols,Map("" -> null)).na.drop(allCols)
+      }
+      case "fillnull" => {
+        df.na.fill(0, allCols).na.replace(allCols,Map("" -> "none"))
+      }
+      case _ => df
+    }
+    resultDf
   }
 }
