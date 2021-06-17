@@ -6,16 +6,6 @@ import ot.dispatcher.plugins.small.sdk.ApplyModel
 import ot.dispatcher.sdk.core.SimpleQuery
 import ot.dispatcher.sdk.core.extensions.StringExt._
 import ot.dispatcher.sdk.{PluginCommand, PluginUtils}
-
-import com.typesafe.config.Config
-import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.types.NumericType
-import ot.dispatcher.plugins.small.sdk.FitModel
-import ot.dispatcher.plugins.small.utils.SmallModelsUtils
-import ot.dispatcher.sdk.core.SimpleQuery
-import ot.dispatcher.sdk.core.extensions.StringExt._
-import ot.dispatcher.sdk.{PluginCommand, PluginUtils}
-
 import ot.dispatcher.plugins.small.utils.SmallModelsUtils
 
 import scala.util.{Failure, Success, Try}
