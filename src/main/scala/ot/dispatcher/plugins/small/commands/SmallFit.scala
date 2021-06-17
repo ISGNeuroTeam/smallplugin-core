@@ -67,7 +67,6 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
 
     val result = configAndModel
       .map { case (cfg, model) =>
-        {
         model.fit(
           modelName = modelName,
           modelConfig = cfg,
@@ -76,7 +75,7 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
           targetCol = Option(targetCol),
           keywords = getKeywords(),
           utils = utils
-        )}
+        )
       }
       .map( algo => {
         val (pModel, res) = algo(filledDf)
