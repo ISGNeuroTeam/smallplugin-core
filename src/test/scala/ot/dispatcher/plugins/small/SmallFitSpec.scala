@@ -122,7 +122,6 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
     val searchId: Int = Random.nextInt()
     val query: SimpleQuery = SimpleQuery(s"$model target from a b c", searchId)
 
-    //query.run(train)
     query.run(input)
 
     f.parameters.isCompleted shouldBe true
