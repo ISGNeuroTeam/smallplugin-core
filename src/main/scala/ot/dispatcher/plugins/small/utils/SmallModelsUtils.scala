@@ -47,10 +47,7 @@ class SmallModelsUtils(pluginUtils: PluginUtils){
   }
 
   def fixMissing(df: DataFrame, cols: List[String]): DataFrame = {
-
     val getConf = config.getString("missing")
-    println(s"filling strategy: $getConf")
-
     val resultDf = getConf match {
       case "skip" => {
         df.na.replace(cols,Map("" -> null)).na.drop(cols)

@@ -100,14 +100,6 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
   private val train: DataFrame =
     sparkSession.emptyDataFrame
 
-  private val inputCommonDataset: String ="""[
-                                            |{"_time":"","strtime":"","a":1, "b":2, "c":2, "target":"1a", "class":"1a" },
-                                            |{"_time":1,"strtime":"e","a":7, "b":6, "c":2, "target":"2b", "class":"2b" },
-                                            |{"_time":1,"strtime":"f","a":7, "b":"", "c":2, "target":"2b", "class":"2b" },
-                                            |{"_time":1,"strtime":"x","a":7, "b":8, "c":2, "target":"", "class":"" }
-                                            | ]""".stripMargin
-  val input = new CommandTest {override val dataset: String = inputCommonDataset}.jsonToDf(inputCommonDataset)
-
   implicit class QueryRunner(query: SimpleQuery) {
     def run(df: DataFrame)(implicit utils: PluginUtils): DataFrame =
       new SmallFit(query, utils)
@@ -122,7 +114,7 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
     val searchId: Int = Random.nextInt()
     val query: SimpleQuery = SimpleQuery(s"$model target from a b c", searchId)
 
-    query.run(input)
+    query.run(train)
 
     f.parameters.isCompleted shouldBe true
 
@@ -383,6 +375,24 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
     val parameters = Await.result(f.parameters, 1 second)
 
     parameters.modelName shouldBe alias
+  }
+
+  it should "work with missing data`." in { f =>
+    val model: String = "dummy"
+    val searchId: Int = Random.nextInt()
+    val query: SimpleQuery = SimpleQuery(s"$model target from a b c", searchId)
+
+    val inputDataset: String ="""[
+                                        |{"_time":"","strtime":"","a":1, "b":2, "c":2, "target":"1a", "class":"1a" },
+                                        |{"_time":1,"strtime":"e","a":7, "b":6, "c":2, "target":"2b", "class":"2b" },
+                                        |{"_time":1,"strtime":"f","a":7, "b":"", "c":2, "target":"2b", "class":"2b" },
+                                        |{"_time":1,"strtime":"x","a":7, "b":8, "c":2, "target":"", "class":"" }
+                                        | ]""".stripMargin
+    val inputWithMissing = new CommandTest {override val dataset: String = inputDataset}.jsonToDf(inputDataset)
+
+    val actual = query.run(inputWithMissing)
+
+    actual.count() shouldBe 2.toLong
   }
 
 }
