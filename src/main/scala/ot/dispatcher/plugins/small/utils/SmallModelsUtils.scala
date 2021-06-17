@@ -5,8 +5,6 @@ import java.nio.file.Paths
 import org.apache.spark.ml.{Pipeline, PipelineModel, Transformer}
 import org.apache.spark.sql.DataFrame
 import ot.dispatcher.sdk.PluginUtils
-import org.apache.spark.sql.functions._
-import org.apache.spark.sql.types._
 
 import scala.util.{Failure, Success, Try}
 
@@ -48,18 +46,17 @@ class SmallModelsUtils(pluginUtils: PluginUtils){
     case Failure(_) => load(name)
   }
 
-  def fixMissing(df: DataFrame, featureCols: List[String], targetCol: String): DataFrame = {
+  def fixMissing(df: DataFrame, cols: List[String]): DataFrame = {
 
     val getConf = config.getString("missing")
     println(s"filling strategy: $getConf")
-    val allCols = targetCol::featureCols
 
     val resultDf = getConf match {
       case "skip" => {
-        df.na.replace(allCols,Map("" -> null)).na.drop(allCols)
+        df.na.replace(cols,Map("" -> null)).na.drop(cols)
       }
       case "fillnull" => {
-        df.na.fill(0, allCols).na.replace(allCols,Map("" -> "none"))
+        df.na.fill(0, cols).na.replace(cols,Map("" -> "none"))
       }
       case _ => df
     }

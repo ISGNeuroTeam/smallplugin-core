@@ -31,17 +31,8 @@ class SmallFit(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, ut
     val nonNumericFeature =df.schema.find(f => featureCols.contains(f.name) && targetCol!=f.name && !f.dataType.isInstanceOf[NumericType])
     nonNumericFeature.map {x => sendError( s" Feature column '${x.name}' have non numeric type")}
 
-    println("=====================================")
-    println("filling missing values:")
-    println("before:")
-    df.show(5)
-    val filledDf = fixMissing(df, featureCols, targetCol)
-    println("after:")
-    filledDf.show(5)
-
-    //println("test")
-
-
+    val colsToFill = if (targetCol != null) {targetCol :: featureCols} else {featureCols}
+    val filledDf = fixMissing(df, colsToFill)
 
     // 1. Get algorithm details reader
     val configReader: String => Try[String] =
