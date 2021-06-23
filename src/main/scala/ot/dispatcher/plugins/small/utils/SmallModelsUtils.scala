@@ -53,7 +53,19 @@ class SmallModelsUtils(pluginUtils: PluginUtils){
         df.na.replace(cols,Map("" -> null)).na.drop(cols)
       }
       case "fillnull" => {
-        df.na.fill(0, cols).na.replace(cols,Map("" -> "none"))
+        val colsSet = cols.toSet
+        val typeMap = df.dtypes.map( column =>
+          {
+            if (!colsSet.contains(column._1)) {column._1 -> ""}
+            else {
+              column._2 match {
+                case "StringType" => column._1 -> "none"
+                case "DoubleType" => column._1 -> 0.0
+                case "LongType" => column._1 -> 0.toLong
+              }
+            }
+          }).toMap
+        df.na.replace(cols,Map("" -> "none")).na.fill(typeMap)
       }
       case _ => df
     }
