@@ -45,4 +45,27 @@ class SmallModelsUtils(pluginUtils: PluginUtils){
     case Success(m) => m
     case Failure(_) => load(name)
   }
+
+  def fixMissing(df: DataFrame, cols: List[String]): DataFrame = {
+    val getConf = config.getString("missing")
+    val resultDf = getConf match {
+      case "skip" => {
+        df.na.replace(cols,Map("" -> null)).na.drop(cols)
+      }
+      case "fillnull" => {
+        val colsSet = cols.toSet
+        val typeMap = df.dtypes.map( column =>
+          column._2 match {
+                case "StringType" => column._1 -> "none"
+                case "DoubleType" => column._1 -> 0.0
+                case "LongType" => column._1 -> 0.toLong
+                case "BooleanType" => column._1 -> false
+          }).toMap
+        val colsMap = typeMap.filterKeys(colsSet.contains)
+        df.na.replace(cols,Map("" -> "none")).na.fill(colsMap)
+      }
+      case _ => df
+    }
+    resultDf
+  }
 }

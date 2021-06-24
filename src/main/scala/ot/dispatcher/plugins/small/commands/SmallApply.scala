@@ -3,15 +3,19 @@ package ot.dispatcher.plugins.small.commands
 import com.typesafe.config.Config
 import org.apache.spark.sql.DataFrame
 import ot.dispatcher.plugins.small.sdk.ApplyModel
-import ot.dispatcher.sdk.{PluginCommand, PluginUtils}
 import ot.dispatcher.sdk.core.SimpleQuery
 import ot.dispatcher.sdk.core.extensions.StringExt._
+import ot.dispatcher.sdk.{PluginCommand, PluginUtils}
+import ot.dispatcher.plugins.small.utils.SmallModelsUtils
 
 import scala.util.{Failure, Success, Try}
 
 
 
 class SmallApply(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, utils, Set("from")) {
+  private val smallUtils = new SmallModelsUtils(utils)
+  import smallUtils._
+
   private val featureCols = getPositional("from").getOrElse(List()).map(_.stripBackticks())
   private val algoname = mainArgs match {
     case Nil => sendError("Algorithm or model name is not specified")
@@ -23,6 +27,8 @@ class SmallApply(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
 
 
   def transform(df: DataFrame): DataFrame = {
+
+    val filledDf = fixMissing(df, featureCols)
 
     // 1. Get algorithm details reader
     val configReader: String => Try[String] =
@@ -67,7 +73,7 @@ class SmallApply(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
         }
 
     val result = transformer
-      .map(_(df))
+      .map(_(filledDf))
       .map(res => {
         val serviceCols =  res.columns.filter(_.matches("__.*__"))
         res.drop(serviceCols : _*)
