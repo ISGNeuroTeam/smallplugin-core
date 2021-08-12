@@ -22,8 +22,8 @@ class SmallScore(sq: SimpleQuery, utils: PluginUtils) extends PluginCommand(sq, 
   import smallUtils._
 
   private val (metricName, labelCol) = returns.flatFields.map(_.stripBackticks()) match {
-    case "score" :: first :: second :: _ => (first, second)
-    case "score" :: first :: _ => sendError("Label column name is not specified")
+    case first :: second :: _ => (first, second)
+    case first :: _ => sendError("Label column name is not specified")
     case _ => sendError("Metric is not specified")
   }
 
