@@ -11,7 +11,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, Outcome, fixture}
 import ot.dispatcher.plugins.small.commands.SmallFit
 import ot.dispatcher.sdk.PluginUtils
 import ot.dispatcher.sdk.core.SimpleQuery
-import ot.dispatcher.sdk.test.{CommandTestException, MockPluginUtils}
+import ot.dispatcher.sdk.test.{CommandTest, CommandTestException, MockPluginUtils}
 
 
 class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers {
@@ -375,6 +375,24 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
     val parameters = Await.result(f.parameters, 1 second)
 
     parameters.modelName shouldBe alias
+  }
+
+  it should "work with missing data." in { f =>
+    val model: String = "dummy"
+    val searchId: Int = Random.nextInt()
+    val query: SimpleQuery = SimpleQuery(s"$model target from a b c", searchId)
+
+    val inputDataset: String ="""[
+                                        |{"_time":"","strtime":"","a":2, "b":2, "c":2.1, "target":"1a", "class":"1a" },
+                                        |{"_time":1,"strtime":"e","a":2, "b":6, "c":2.2, "target":"2b", "class":"2b" },
+                                        |{"_time":1,"strtime":"f","a":2, "b":"", "c":null, "target":"2b", "class":"2b" },
+                                        |{"_time":1,"strtime":"x","a":2, "b":8, "c":2.4, "target":"", "class":"" },
+                                        |{"_time":1,"strtime":"x","a":2, "b":5, "c":2.5, "target":null, "class":null }
+                                        | ]""".stripMargin
+    val inputWithMissing = new CommandTest {override val dataset: String = inputDataset}.jsonToDf(inputDataset)
+    val actual = query.run(inputWithMissing)
+
+    actual.count() shouldBe 2.toLong
   }
 
 }

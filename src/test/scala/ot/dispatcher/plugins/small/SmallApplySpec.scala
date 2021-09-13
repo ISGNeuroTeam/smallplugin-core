@@ -12,7 +12,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, Outcome, fixture}
 import ot.dispatcher.plugins.small.commands.SmallApply
 import ot.dispatcher.sdk.PluginUtils
 import ot.dispatcher.sdk.core.SimpleQuery
-import ot.dispatcher.sdk.test.{CommandTestException, MockPluginUtils}
+import ot.dispatcher.sdk.test.{CommandTest, CommandTestException, MockPluginUtils}
 
 
 class SmallApplySpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers {
@@ -406,6 +406,24 @@ class SmallApplySpec extends fixture.FlatSpec with BeforeAndAfterAll with Matche
 
   it should "rename a column defined in the saved model's `predictionCol` parameter to the `modelName` that ends with `_prediction` before data frame returned." in { f =>
     cancel("Implementation is too complex and time costly to be done at this time.")
+  }
+
+  it should "work with missing data" in { f =>
+    val model: String = "dummy"
+    val featureCols: List[String] = List("a", "b", "c")
+    val query: SimpleQuery = SimpleQuery(s"$model target from ${featureCols.mkString(" ")}")
+
+    val inputDataset: String ="""[
+                                |{"_time":"","strtime":"","a":1, "b":2, "c":2, "target":"1a", "class":"1a" },
+                                |{"_time":1,"strtime":"e","a":7, "b":6, "c":2, "target":"2b", "class":"2b" },
+                                |{"_time":1,"strtime":"f","a":7, "b":"", "c":2, "target":"2b", "class":"2b" },
+                                |{"_time":1,"strtime":"x","a":7, "b":8, "c":2, "target":"", "class":"" }
+                                | ]""".stripMargin
+    val inputWithMissing = new CommandTest {override val dataset: String = inputDataset}.jsonToDf(inputDataset)
+
+    val actual = query.run(inputWithMissing)
+
+    actual.count() shouldBe 3.toLong
   }
 }
 
