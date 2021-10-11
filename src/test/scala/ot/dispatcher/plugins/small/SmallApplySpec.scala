@@ -57,7 +57,6 @@ class SmallApplySpec extends fixture.FlatSpec with BeforeAndAfterAll with Matche
   override def afterAll(): Unit = {
     deleteMemCacheDir()
     deletePersistentDir()
-    sparkSession.close()
   }
 
   override protected def withFixture(test: OneArgTest): Outcome = {

@@ -22,4 +22,4 @@ libraryDependencies ++= Seq(
   dependencies.sparkMlLib
 )
 
-parallelExecution in Test := false
+Test / parallelExecution := false

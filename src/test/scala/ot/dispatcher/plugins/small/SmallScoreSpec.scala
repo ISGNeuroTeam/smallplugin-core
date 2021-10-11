@@ -64,9 +64,6 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
 
   override def beforeAll(): Unit = ()
 
-  override def afterAll(): Unit =
-    sparkSession.close()
-
   override protected def withFixture(test: OneArgTest): Outcome = {
     val theFixture: FixtureParam =
       FixtureParam(parametersToComplete.future)
