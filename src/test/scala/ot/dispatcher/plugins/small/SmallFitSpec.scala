@@ -82,7 +82,6 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
 
   override def afterAll(): Unit = {
     deleteMemCacheDir()
-    sparkSession.close()
   }
 
   override protected def withFixture(test: OneArgTest): Outcome = {
@@ -231,7 +230,7 @@ class SmallFitSpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers
 
     val model: String = "dummy"
     val query: SimpleQuery = SimpleQuery(s"$model target from a b c")
-    val source: DataFrame = Seq((1, 2, 3, 4, 5)).toDF("a", "b", "c", "__d__", "__e__")
+    val source: DataFrame = Seq((1, 2, 3, 4, 5, "some")).toDF("a", "b", "c", "__d__", "__e__", "target")
     val result: DataFrame = query.run(source)
 
     f.parameters.isCompleted shouldBe true
