@@ -409,15 +409,15 @@ class SmallApplySpec extends FixtureAnyFlatSpec with BeforeAndAfterAll with Matc
     cancel("Implementation is too complex and time costly to be done at this time.")
   }
 
-  it should "work with missing data" in { f =>
+  it should "work with missing data" in { _ =>
     val model: String = "dummy"
     val featureCols: List[String] = List("a", "b", "c")
     val query: SimpleQuery = SimpleQuery(s"$model target from ${featureCols.mkString(" ")}")
 
     val inputDataset: String ="""[
-                                |{"_time":"","strtime":"","a":1, "b":2, "c":2, "target":"1a", "class":"1a" },
+                                |{"_time":null, "strtime":"","a":1, "b":2, "c":2, "target":"1a", "class":"1a" },
                                 |{"_time":1,"strtime":"e","a":7, "b":6, "c":2, "target":"2b", "class":"2b" },
-                                |{"_time":1,"strtime":"f","a":7, "b":"", "c":2, "target":"2b", "class":"2b" },
+                                |{"_time":1,"strtime":"f","a":7, "b":null, "c":2, "target":"2b", "class":"2b" },
                                 |{"_time":1,"strtime":"x","a":7, "b":8, "c":2, "target":"", "class":"" }
                                 | ]""".stripMargin
     val inputWithMissing = new CommandTest {override val dataset: String = inputDataset}.jsonToDf(inputDataset)

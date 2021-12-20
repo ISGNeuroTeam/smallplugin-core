@@ -14,7 +14,7 @@ lazy val dependencies = new {
   private val sparkVersion = "3.1.2"
 
   val smallPluginSdk = "ot.dispatcher.plugins.small" % "smallplugin-sdk_2.12" % smallPluginSdkVersion % Compile
-  val sparkMlLib = "org.apache.spark" %% "spark-mllib" % sparkVersion % Provided
+  val sparkMlLib = "org.apache.spark" %% "spark-mllib" % sparkVersion % Compile
 }
 
 libraryDependencies ++= Seq(
