@@ -7,14 +7,16 @@ import scala.reflect.io.Path
 import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
 import org.apache.log4j.Logger
 import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.scalatest.{BeforeAndAfterAll, Matchers, Outcome, fixture}
+import org.scalatest.flatspec.FixtureAnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{BeforeAndAfterAll, Outcome}
 import ot.dispatcher.plugins.small.commands.SmallScore
 import ot.dispatcher.sdk.PluginUtils
 import ot.dispatcher.sdk.core.SimpleQuery
 import ot.dispatcher.sdk.test.{CommandTestException, MockPluginUtils}
 
 
-class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Matchers {
+class SmallScoreSpec  extends FixtureAnyFlatSpec with BeforeAndAfterAll with Matchers {
 
   import SmallScoreSpec._
 

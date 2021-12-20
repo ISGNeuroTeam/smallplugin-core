@@ -4,17 +4,17 @@ description := "SMaLL plugin core"
 
 organization := "ot.dispatcher.plugins.small"
 
-version := "2.1.5"
+version := "3.0.0"
 
-scalaVersion := "2.11.12"
+scalaVersion := "2.12.10"
 
 lazy val dependencies = new {
-  private val smallPluginSdkVersion = "0.3.0"
-  private val sparkVersion = "2.4.3"
 
-  val smallPluginSdk = "ot.dispatcher.plugins.small" % "smallplugin-sdk_2.11" % smallPluginSdkVersion % Compile
-  val sparkMlLib = "org.apache.spark" %% "spark-mllib" % sparkVersion % Compile
+  private val smallPluginSdkVersion = "1.0.0"
+  private val sparkVersion = "3.1.2"
 
+  val smallPluginSdk = "ot.dispatcher.plugins.small" % "smallplugin-sdk_2.12" % smallPluginSdkVersion % Compile
+  val sparkMlLib = "org.apache.spark" %% "spark-mllib" % sparkVersion % Provided
 }
 
 libraryDependencies ++= Seq(

@@ -8,14 +8,16 @@ import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.feature.SQLTransformer
 import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.scalatest.{BeforeAndAfterAll, Matchers, Outcome, fixture}
+import org.scalatest.flatspec.FixtureAnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{BeforeAndAfterAll, Outcome}
 import ot.dispatcher.plugins.small.commands.SmallApply
 import ot.dispatcher.sdk.PluginUtils
 import ot.dispatcher.sdk.core.SimpleQuery
 import ot.dispatcher.sdk.test.{CommandTest, CommandTestException, MockPluginUtils}
 
 
-class SmallApplySpec extends fixture.FlatSpec with BeforeAndAfterAll with Matchers {
+class SmallApplySpec extends FixtureAnyFlatSpec with BeforeAndAfterAll with Matchers {
 
   import SmallApplySpec._
 
