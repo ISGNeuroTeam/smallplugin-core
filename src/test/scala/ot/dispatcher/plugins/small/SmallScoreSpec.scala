@@ -90,7 +90,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
 
   "The score command" should "invoke a model implementation as defined in the `plugin.conf`." in { f =>
     val model: String = "dummy"
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs b")
+    val query: SimpleQuery = SimpleQuery(s"$model a vs b")
 
     query.run(evaluate)
 
@@ -100,7 +100,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
 
   it should "fail if a model implementation not defined in `plugin.conf`." in { f =>
     val model: String = "none"
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs b")
+    val query: SimpleQuery = SimpleQuery(s"$model a vs b")
 
     an [CommandTestException] should be thrownBy query.run(evaluate)
 
@@ -110,7 +110,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
 
   it should "fail if a defined model implementation is not available." in { f =>
     val model: String = "unavailable"
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs b")
+    val query: SimpleQuery = SimpleQuery(s"$model a vs b")
 
     an [CommandTestException] should be thrownBy query.run(evaluate)
 
@@ -120,7 +120,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
 
   it should "pass to a model a specific configuration as defined in the `plugin.conf`." in { f =>
     val model: String = "dummy"
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs b")
+    val query: SimpleQuery = SimpleQuery(s"$model a vs b")
 
     query.run(evaluate)
 
@@ -138,7 +138,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
 
   it should "fail if a model's specific configuration defined in the `plugin.conf` is failed to load." in { f =>
     val model: String = "misconfigured"
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs b")
+    val query: SimpleQuery = SimpleQuery(s"$model a vs b")
 
     an [CommandTestException] should be thrownBy query.run(evaluate)
 
@@ -148,7 +148,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
 
   it should "pass no specific configuration if it is not defined in the `plugin.conf`." in { f =>
     val model: String = "unconfigured"
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs b")
+    val query: SimpleQuery = SimpleQuery(s"$model a vs b")
 
     query.run(evaluate)
 
@@ -160,7 +160,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
 
   it should "fail if the label column name is not specified." in { f =>
     val model: String = "dummy"
-    val query: SimpleQuery = SimpleQuery(s"score $model vs b")
+    val query: SimpleQuery = SimpleQuery(s"$model vs b")
 
     an [CommandTestException] should be thrownBy query.run(evaluate)
 
@@ -170,7 +170,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
 
   it should "fail if the prediction column name is not specified." in { f =>
     val model: String = "dummy"
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs")
+    val query: SimpleQuery = SimpleQuery(s"$model a vs")
 
     an [CommandTestException] should be thrownBy query.run(evaluate)
 
@@ -181,7 +181,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
   it should "pass the search identifier to a model implementation." in { f=>
     val model: String = "dummy"
     val searchId: Int = scala.util.Random.nextInt()
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs b", searchId)
+    val query: SimpleQuery = SimpleQuery(s"$model a vs b", searchId)
     query.run(evaluate)
 
     val parameters = Await.result(f.parameters, 1 second)
@@ -201,7 +201,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
       .map { case (k, v) => k + "=" + v }
       .mkString(" ")
 
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs b $keywordsString")
+    val query: SimpleQuery = SimpleQuery(s"$model a vs b $keywordsString")
     query.run(evaluate)
 
     val parameters = Await.result(f.parameters, 1 second)
@@ -214,7 +214,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
     import sparkSession.implicits._
 
     val model: String = "dummy"
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs b")
+    val query: SimpleQuery = SimpleQuery(s"$model a vs b")
     val source: DataFrame = Seq((1, 2, 3, 4, 5)).toDF("a", "b", "c", "__d__", "__e__")
     val result: DataFrame = query.run(source)
 
@@ -229,7 +229,7 @@ class SmallScoreSpec  extends fixture.FlatSpec with BeforeAndAfterAll with Match
 
   it should "invoke the default model implementation when the requested model is not defined in the config `plugin.conf`." in { f =>
     val model: String = "none"
-    val query: SimpleQuery = SimpleQuery(s"score $model a vs b")
+    val query: SimpleQuery = SimpleQuery(s"$model a vs b")
 
     val addDefault: Config => Config =
       cfg =>
