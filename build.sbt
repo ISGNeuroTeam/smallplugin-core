@@ -4,7 +4,7 @@ description := "SMaLL plugin core"
 
 organization := "ot.dispatcher.plugins.small"
 
-version := "2.1.5"
+version := "2.1.6"
 
 scalaVersion := "2.11.12"
 
